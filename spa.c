@@ -58,6 +58,13 @@ bool spa_init() {
         }
     } /* ... */
 
+    {
+        if (!spa_player_init(display)) {
+            fprintf(stderr, "spa_player_init(): failed\n");
+            return false;
+        }
+    }
+
     return true;
 }
 
@@ -82,14 +89,58 @@ bool spa_loop(bool *redraw) {
     else if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
         return true;
 
+    else if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
+        switch (ev.keyboard.keycode) {
+            case ALLEGRO_KEY_W:
+                player->y_vel = -PLAYER_VEL;
+                break;
+            case ALLEGRO_KEY_S:
+                player->y_vel = PLAYER_VEL;
+                break;
+            case ALLEGRO_KEY_A:
+                player->x_vel = -PLAYER_VEL;
+                break;
+            case ALLEGRO_KEY_D:
+                player->x_vel = PLAYER_VEL;
+                break;
+            case ALLEGRO_KEY_SPACE:
+                fprintf(stdout, "pew!\n");
+                break;
+        }
+    }
+
+    else if (ev.type == ALLEGRO_EVENT_KEY_UP) {
+        switch (ev.keyboard.keycode) {
+            case ALLEGRO_KEY_W:
+                if (player->y_vel < 0)
+                    player->y_vel = 0;
+                break;
+            case ALLEGRO_KEY_S:
+                if (player->y_vel > 0)
+                    player->y_vel = 0;
+                break;
+            case ALLEGRO_KEY_A:
+                if (player->x_vel < 0)
+                    player->x_vel = 0;
+                break;
+            case ALLEGRO_KEY_D:
+                if (player->x_vel > 0)
+                    player->x_vel = 0;
+                break;
+        }
+    }
+
     return false;
 }
 
 int main(int argc, char **argv) {
 
-    if (!spa_init())
-        goto cleanup;
+    bool redraw = true;
 
+    {
+        if (!spa_init())
+            goto cleanup;
+    } /* ... */
 
     {
         player = spa_entity_create();
@@ -98,10 +149,8 @@ int main(int argc, char **argv) {
             goto cleanup;
         }
 
-        spa_player_init(player, display);
-    }
-
-    bool redraw = true;
+        spa_player_init_entity(player);
+    } /* ... */
 
     {
         al_register_event_source(event_queue, 
@@ -123,7 +172,12 @@ int main(int argc, char **argv) {
 
     {
         while(!spa_loop(&redraw)) {
-            
+
+            if (player->x + player->x_vel < 0)
+                player->x = SCREEN_W - player->width;
+            else if (player->x + player->width + player->x_vel > SCREEN_W)
+                player->x = 0;
+
             spa_entity_update(player);
 
             if (redraw && al_is_event_queue_empty(event_queue)) {
