@@ -1,30 +1,21 @@
 #include <stdio.h>
 #include <allegro5/allegro.h>
-#include <allegro5/allegro_color.h>
 
-const int SCREEN_W = 640;
-const int SCREEN_H = 480;
-const int BITMAP_SIZE = 32;
-const float FPS = 60;
+#include "spa.h"
+#include "entity.h"
+#include "player.h"
 
-int main(int argc, char **argv) {
+ALLEGRO_DISPLAY *display = NULL;
+ALLEGRO_EVENT_QUEUE *event_queue = NULL;
+ALLEGRO_TIMER *timer = NULL;
 
-    int status = 0;
-    
-    ALLEGRO_DISPLAY *display = NULL;
-    ALLEGRO_EVENT_QUEUE *event_queue = NULL;
-    ALLEGRO_TIMER *timer = NULL;
-    ALLEGRO_BITMAP *bitmap = NULL;
-    
-    bool redraw = true;
+entity *player = NULL;
 
-    int iter = 0;
-
+bool spa_init() {
     {
         if (!al_init()) {
             fprintf(stderr, "al_init(): failed\n");
-            status = -1;
-            goto exit;
+            return false;
         }
     } /* ... */
 
@@ -32,26 +23,15 @@ int main(int argc, char **argv) {
         timer = al_create_timer(1.0 / FPS);
         if (!timer) {
             fprintf(stderr, "al_create_timer(): failed\n");
-            status = -1;
-            goto exit;
+            return false;
         }
     } /* ... */
 
     {
-        display = al_create_display(640, 480);
+        display = al_create_display(SCREEN_W, SCREEN_H);
         if (!display) {
             fprintf(stderr, "al_create_display(): failed\n");
-            status = -1;
-            goto cleanupTimer;
-        }
-    } /* ... */
-
-    {
-        bitmap = al_create_bitmap(BITMAP_SIZE, BITMAP_SIZE);
-        if (!bitmap) {
-            fprintf(stderr, "al_create_bitmap(): failed\n");
-            status = -1;
-            goto cleanupDisplay;
+            return false;
         }
     } /* ... */
 
@@ -59,16 +39,69 @@ int main(int argc, char **argv) {
         event_queue = al_create_event_queue();
         if (!event_queue) {
             fprintf(stderr, "al_create_event_queue(): failed\n");
-            status = -1;
-            goto cleanupBitmap;
+            return false;
         }
     } /* ... */
 
-/*    {
-        al_set_target_bitmap(bitmap);
-        al_clear_to_color(al_map_rgb(255, 0, 255));
-        al_set_target_bitmap(al_get_backbuffer(display));
+    /*
+    {
+        if (!al_install_mouse()) {
+            fprintf(stderr, "al_install_mouse(): failed\n");
+            return false;
+        }
     } */ /* ... */
+
+    {
+        if (!al_install_keyboard()) {
+            fprintf(stderr, "al_install_keyboard(): failed\n");
+            return false;
+        }
+    } /* ... */
+
+    return true;
+}
+
+void spa_render() {
+
+    al_clear_to_color(al_map_rgb(10, 10, 20));
+
+    al_draw_bitmap(player->bitmap, player->x, player->y, 0);
+
+    al_flip_display();
+}
+
+bool spa_loop(bool *redraw) {
+
+    ALLEGRO_EVENT ev;
+
+    al_wait_for_event(event_queue, &ev);
+
+    if (ev.type == ALLEGRO_EVENT_TIMER) {
+        *redraw = true;
+    }
+    else if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+        return true;
+
+    return false;
+}
+
+int main(int argc, char **argv) {
+
+    if (!spa_init())
+        goto cleanup;
+
+
+    {
+        player = spa_entity_create();
+        if (!player) {
+            fprintf(stderr, "spa_entity_create(): failed\n");
+            goto cleanup;
+        }
+
+        spa_player_init(player, display);
+    }
+
+    bool redraw = true;
 
     {
         al_register_event_source(event_queue, 
@@ -77,60 +110,40 @@ int main(int argc, char **argv) {
         al_register_event_source(event_queue,
                 al_get_timer_event_source(timer));
 
+        al_register_event_source(event_queue,
+                al_get_keyboard_event_source());
+
+        /*
+        al_register_event_source(event_queue,
+                al_get_mouse_event_source());
+        */
+
         al_start_timer(timer);
     } /* ... */
 
     {
-        while(1) {
-            ALLEGRO_EVENT ev;
-            al_wait_for_event(event_queue, &ev);
+        while(!spa_loop(&redraw)) {
             
-            if (ev.type == ALLEGRO_EVENT_TIMER) {
-                redraw = true;
-            }
-            else if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-                break;
-            }
+            spa_entity_update(player);
 
             if (redraw && al_is_event_queue_empty(event_queue)) {
                 redraw = false;
-                
-                al_clear_to_color(al_map_rgb(10, 10, 20));
- 
-                al_set_target_bitmap(bitmap);
-
-                al_clear_to_color(al_color_hsv(iter, 1.f, 1.f));
-                al_set_target_bitmap(al_get_backbuffer(display));
-
-                al_draw_bitmap(bitmap, 200, 200, 0);
-
-                al_flip_display();
-
-                iter++;
+                spa_render();
             }
         }
     } /* ... */
 
+cleanup:
+    {
+        if (player)
+            spa_entity_destroy(player);
+        if (event_queue)
+            al_destroy_event_queue(event_queue);
+        if (display)
+            al_destroy_display(display);
+        if (timer)
+            al_destroy_timer(timer);
+    }
 
-
-//cleanupEvents:
-    {
-        al_destroy_event_queue(event_queue);
-    }
-cleanupBitmap:
-    {   
-        al_destroy_bitmap(bitmap);
-    }
-cleanupDisplay:
-    {
-        al_destroy_display(display);
-    } /* ... */
-cleanupTimer:
-    {
-        al_destroy_timer(timer);
-    }
-exit:
-    {
-        return status;
-    }
+    return 0;
 }
