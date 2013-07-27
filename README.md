@@ -17,7 +17,7 @@ time that I actually end up using allegro5.1-specific features.
 
 So, yeah, [allegro5][] is indeed a mandatory dependency.
 
-Once the dependencies are installed, (along with `glibc`, `gcc`, and
+Once the dependencies are installed, (along with `glibc`, `gcc`, `glib`, and
 `make`) you'll be able to build `spa`.
 
 [allegro5]: http://alleg.sourceforge.net
