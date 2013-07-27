@@ -1,7 +1,7 @@
 TARGET = spa
-LIBS = -lallegro -lallegro_color
+LIBS = -lallegro -lallegro_color -lglib-2.0
 CC = gcc
-CFLAGS = -g -Wall
+CFLAGS = -g -Wall -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include/ -std=c99
 
 .PHONY: clean all default
 

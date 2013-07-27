@@ -1,15 +1,18 @@
 #include <stdio.h>
 #include <allegro5/allegro.h>
+#include <glib.h>
 
 #include "spa.h"
 #include "entity.h"
 #include "player.h"
+#include "bullet.h"
 
 ALLEGRO_DISPLAY *display = NULL;
 ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 ALLEGRO_TIMER *timer = NULL;
 
 entity *player = NULL;
+GList *bullet_list = NULL;
 
 bool spa_init() {
     {
@@ -63,7 +66,14 @@ bool spa_init() {
             fprintf(stderr, "spa_player_init(): failed\n");
             return false;
         }
-    }
+    } /* ... */
+
+    {
+        if (!spa_bullet_init(display)) {
+            fprintf(stderr, "spa_bullet_init(): failed\n");
+            return false;
+        }
+    } 
 
     return true;
 }
@@ -74,7 +84,20 @@ void spa_render() {
 
     al_draw_bitmap(player->bitmap, player->x, player->y, 0);
 
+    entity *b;
+    GFOREACH(b, bullet_list) {
+        al_draw_bitmap(b->bitmap, b->x, b->y, 0);
+    }
+
     al_flip_display();
+}
+
+void spa_add_bullet(int x, int y, int x_vel, int y_vel) {
+
+    
+    entity *bullet = spa_entity_create(x, y, x_vel, y_vel);
+    spa_bullet_init_entity(bullet);
+    bullet_list = g_list_append(bullet_list, bullet);
 }
 
 bool spa_loop(bool *redraw) {
@@ -104,7 +127,10 @@ bool spa_loop(bool *redraw) {
                 player->x_vel = PLAYER_VEL;
                 break;
             case ALLEGRO_KEY_SPACE:
-                fprintf(stdout, "pew!\n");
+                spa_add_bullet(player->x + (player->width / 2),
+                        player->y, player->x_vel, player->y_vel - 1);
+
+                fprintf(stdout, "pew! %d\n", g_list_length(bullet_list));
                 break;
         }
     }
@@ -143,7 +169,7 @@ int main(int argc, char **argv) {
     } /* ... */
 
     {
-        player = spa_entity_create();
+        player = spa_entity_create(0, 0, 0, 0);
         if (!player) {
             fprintf(stderr, "spa_entity_create(): failed\n");
             goto cleanup;
@@ -180,6 +206,11 @@ int main(int argc, char **argv) {
 
             spa_entity_update(player);
 
+            entity *b;
+            GFOREACH(b, bullet_list) {
+                spa_entity_update(b);
+            }
+
             if (redraw && al_is_event_queue_empty(event_queue)) {
                 redraw = false;
                 spa_render();
@@ -189,6 +220,9 @@ int main(int argc, char **argv) {
 
 cleanup:
     {
+        spa_player_destroy();
+        spa_bullet_destroy();
+
         if (player)
             spa_entity_destroy(player);
         if (event_queue)
