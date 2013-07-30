@@ -1,8 +1,7 @@
 #pragma once
 
 #include <allegro5/allegro.h>
-
-#define GFOREACH(item, list) for(GList *__glist = list; __glist && (item = __glist->data, true); __glist = __glist->next)
+#include <sys/queue.h>
 
 typedef struct entity entity;
 
@@ -14,7 +13,10 @@ struct entity {
     int width;
     int height;
     ALLEGRO_BITMAP *bitmap;
+	LIST_ENTRY(foo) entity_p;
 };
+
+//LIST_HEAD(entity_list, entity) entity_list_head;
 
 entity* spa_entity_create(int, int, int, int);
 
