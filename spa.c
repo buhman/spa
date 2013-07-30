@@ -87,7 +87,12 @@ void spa_render() {
 
     al_draw_bitmap(player->bitmap, player->x, player->y, 0);
 
-    // TODO: draw bullets
+    entity *bullet; 
+    for (bullet = entity_list_head.lh_first; bullet != NULL; 
+            bullet = (entity*)bullet->entity_p.le_next) {
+
+        al_draw_bitmap(bullet->bitmap, bullet->x, bullet->y, 0);
+    }
 
     al_flip_display();
 }
@@ -97,6 +102,10 @@ void spa_add_bullet(int x, int y, int x_vel, int y_vel) {
 
     entity *bullet = spa_entity_create(x, y, x_vel, y_vel);
     spa_bullet_init_entity(bullet);
+
+    bullet->x -= (bullet->width / 2);
+    bullet->y -= bullet->height;
+    bullet->y_vel -= 1;
 
     LIST_INSERT_HEAD(&entity_list_head, bullet, entity_p);
 }
@@ -207,7 +216,11 @@ int main(int argc, char **argv) {
 
             spa_entity_update(player);
 
-            // TODO: update bullets
+            entity *bullet;
+            for (bullet = entity_list_head.lh_first; bullet != NULL; 
+                    bullet = (entity*)bullet->entity_p.le_next) {
+                spa_entity_update(bullet);
+            }
 
             if (redraw && al_is_event_queue_empty(event_queue)) {
                 redraw = false;
