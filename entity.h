@@ -13,7 +13,7 @@ struct entity {
     int width;
     int height;
     ALLEGRO_BITMAP *bitmap;
-	LIST_ENTRY(foo) entity_p;
+	LIST_ENTRY(entity) entity_p;
 };
 
 //LIST_HEAD(entity_list, entity) entity_list_head;

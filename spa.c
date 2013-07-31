@@ -139,8 +139,6 @@ bool spa_loop(bool *redraw) {
             case ALLEGRO_KEY_SPACE:
                 spa_add_bullet(player->x + (player->width / 2),
                         player->y, player->x_vel, player->y_vel);
-
-                fprintf(stdout, "pew!\n");
                 break;
         }
     }
@@ -216,6 +214,10 @@ int main(int argc, char **argv) {
             for (bullet = entity_list_head.lh_first; bullet != NULL; 
                     bullet = (entity*)bullet->entity_p.le_next) {
                 spa_entity_update(bullet, SCREEN_W);
+
+                if (bullet->y + bullet->height < 0) {
+                    LIST_REMOVE(bullet, entity_p);
+                }
             }
 
             if (redraw && al_is_event_queue_empty(event_queue)) {
