@@ -4,6 +4,7 @@
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
+#include <allegro5/allegro_primitives.h>
 
 #include "spa.h"
 #include "entity.h"
@@ -96,6 +97,13 @@ bool spa_init() {
         font = al_load_font("DejaVuSansMono.ttf", 12, 0);
         if (!font) {
             fprintf(stderr, "al_load_font(): failed\n");
+            return false;
+        }
+    } /* ... */
+
+    {
+        if (!al_init_primitives_addon()) {
+            fprintf(stderr, "al_init_primitives_addon(): failed\n");
             return false;
         }
     } /* ... */
@@ -294,6 +302,7 @@ cleanup:
 
         al_shutdown_font_addon();
         al_shutdown_ttf_addon();
+        al_shutdown_primitives_addon();
 
         if (player)
             spa_entity_destroy(player);

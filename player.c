@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <allegro5/allegro.h>
+#include <allegro5/allegro_primitives.h>
 
 #include "entity.h"
 #include "player.h"
@@ -20,8 +21,19 @@ bool spa_player_init(ALLEGRO_DISPLAY *display) {
     } /* ... */ 
 
     {
+        int width = PLAYER_WIDTH - 1;
+        int height = PLAYER_HEIGHT - 1;
+
         al_set_target_bitmap(player_bitmap);
-        al_clear_to_color(al_map_rgb(255, 0, 255));
+
+        al_clear_to_color(al_map_rgba(0, 0, 0, 0));
+
+        al_draw_triangle(0, height, width, height, width / 2, 0,
+            al_map_rgb(255, 0, 255), 1);
+
+        al_draw_triangle(0, height, 1, 1, width / 3, height, al_map_rgb(255, 0, 255), 1);
+        al_draw_triangle(width, height, width, 1, width - (width / 3), height , al_map_rgb(255, 0, 255), 1);
+
         al_set_target_bitmap(al_get_backbuffer(display));
     } /* ... */
 
