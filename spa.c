@@ -221,7 +221,7 @@ int main(int argc, char **argv) {
     } /* ... */
 
     {
-        player = spa_entity_create(SCREEN_W / 2, SCREEN_H / 2, 0, 0);
+        player = spa_entity_create(SCREEN_W / 2, SCREEN_H - (SCREEN_H / 4), 0, 0);
         if (!player) {
             fprintf(stderr, "spa_entity_create(): failed\n");
             goto cleanup;
@@ -258,19 +258,20 @@ int main(int argc, char **argv) {
 
         while(!spa_loop(&redraw)) {
 
-            spa_entity_update(player, SCREEN_W);
-
             for (bullet = bullet_list_head->lh_first; bullet != NULL; 
                     bullet = bullet->entity_p.le_next) {
-                spa_entity_update(bullet, SCREEN_W);
 
                 if (bullet->y + bullet->height < 0) {
                     LIST_REMOVE(bullet, entity_p);
+                    //spa_entity_destroy(bullet);
+                    continue;
                 }
 
                 if (spa_entity_collide(bullet, player)) {
                     player->health -= 5;
                     LIST_REMOVE(bullet, entity_p);
+                    //spa_entity_destroy(bullet);
+                    continue;
                 }
 
                 for (hater = hater_list_head->lh_first; hater != NULL;
@@ -279,12 +280,27 @@ int main(int argc, char **argv) {
                     if (spa_entity_collide(bullet, hater)) {
                         hater->health -= 5;
                         LIST_REMOVE(bullet, entity_p);
+                        //spa_entity_destroy(bullet);
 
-                        if (hater->health < 0)
+                        if (hater->health < 0) {
                             LIST_REMOVE(hater, entity_p);
+                            spa_entity_destroy(hater);
+                        }
+                        break;
                     }
                 }
+                
+                if (bullet)
+                    spa_entity_update(bullet, SCREEN_W);
             }
+
+            for (hater = hater_list_head->lh_first; hater != NULL;
+                    hater = hater->entity_p.le_next) {
+                
+                spa_entity_update(hater, SCREEN_W);
+            }
+
+            spa_entity_update(player, SCREEN_W);
 
             if (redraw && al_is_event_queue_empty(event_queue)) {
                 redraw = false;

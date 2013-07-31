@@ -24,6 +24,7 @@ entity* spa_entity_create(int x, int y, int x_vel, int y_vel) {
         e->width = 0;
         e->height = 0;
         e->health = 1;
+        e->type = 0;
         e->bitmap = NULL;
     } /* ... */
 

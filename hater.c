@@ -34,7 +34,6 @@ void spa_hater_init_entity(entity* hater) {
 
     hater->x -= (hater->width / 2);
     hater->y -= hater->height;
-    hater->y_vel -= 1;
 }
 
 void spa_hater_destroy() {
@@ -48,7 +47,7 @@ void spa_create_haters(entity_list* lh, int screen_width,
     for (int i = 0; i < number; i++) {
     
         entity *hater = spa_entity_create(rand() % screen_width, 
-                rand() % screen_height, 0, 0);
+                rand() % screen_height / 2, rand() % 3 - 1, 0);
         spa_hater_init_entity(hater);
 
         LIST_INSERT_HEAD(lh, hater, entity_p);
