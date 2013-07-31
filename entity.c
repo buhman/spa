@@ -42,8 +42,13 @@ void spa_entity_destroy(entity *e) {
         free(e);
 }
 
-void spa_entity_update(entity *e) {
+void spa_entity_update(entity *e, int screen_width) {
 
     e->x += e->x_vel;
     e->y += e->y_vel;
+
+    if (e->x + e->x_vel < 0)
+        e->x = screen_width - e->width;
+    else if (e->x + e->width + e->x_vel > screen_width)
+        e->x = 0;
 }

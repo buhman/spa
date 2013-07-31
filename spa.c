@@ -207,19 +207,15 @@ int main(int argc, char **argv) {
     } /* ... */
 
     {
+        entity *bullet;
+
         while(!spa_loop(&redraw)) {
 
-            if (player->x + player->x_vel < 0)
-                player->x = SCREEN_W - player->width;
-            else if (player->x + player->width + player->x_vel > SCREEN_W)
-                player->x = 0;
+            spa_entity_update(player, SCREEN_W);
 
-            spa_entity_update(player);
-
-            entity *bullet;
             for (bullet = entity_list_head.lh_first; bullet != NULL; 
                     bullet = (entity*)bullet->entity_p.le_next) {
-                spa_entity_update(bullet);
+                spa_entity_update(bullet, SCREEN_W);
             }
 
             if (redraw && al_is_event_queue_empty(event_queue)) {

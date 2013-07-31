@@ -1,7 +1,7 @@
 TARGET = spa
 LIBS = -lallegro
 CC = gcc
-CFLAGS = -g -Wall -std=c99
+CFLAGS = -g -Wall -std=c99 -O3
 
 .PHONY: clean all default
 
