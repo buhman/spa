@@ -12,6 +12,7 @@ struct entity {
     int y_vel;
     int width;
     int height;
+    int health;
     ALLEGRO_BITMAP *bitmap;
 	LIST_ENTRY(entity) entity_p;
 };
@@ -25,3 +26,5 @@ void spa_entity_init(entity*, ALLEGRO_BITMAP*);
 void spa_entity_destroy(entity*);
 
 void spa_entity_update(entity*, int);
+
+bool spa_entity_collide(entity*, entity*);

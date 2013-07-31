@@ -1,6 +1,9 @@
 #include <stdio.h>
-#include <allegro5/allegro.h>
 #include <sys/queue.h>
+
+#include <allegro5/allegro.h>
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
 
 #include "spa.h"
 #include "entity.h"
@@ -10,6 +13,7 @@
 ALLEGRO_DISPLAY *display;
 ALLEGRO_EVENT_QUEUE *event_queue;
 ALLEGRO_TIMER *timer;
+ALLEGRO_FONT *font;
 
 entity *player;
 LIST_HEAD(entity_list, entity) entity_list_head;
@@ -75,6 +79,15 @@ bool spa_init() {
         }
     }
     {
+        al_init_font_addon();
+        al_init_ttf_addon();
+        font = al_load_font("DejaVuSansMono.ttf", 12, 0);
+        if (!font) {
+            fprintf(stderr, "al_load_font(): failed\n");
+            return false;
+        }
+    }
+    {
         LIST_INIT(&entity_list_head);
     }
 
@@ -93,6 +106,12 @@ void spa_render() {
 
         al_draw_bitmap(bullet->bitmap, bullet->x, bullet->y, 0);
     }
+}
+
+void spa_osd() {
+
+    al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, ALLEGRO_ALIGN_LEFT,
+            "health: %d", player->health);
 
     al_flip_display();
 }
@@ -102,10 +121,6 @@ void spa_add_bullet(int x, int y, int x_vel, int y_vel) {
 
     entity *bullet = spa_entity_create(x, y, x_vel, y_vel);
     spa_bullet_init_entity(bullet);
-
-    bullet->x -= (bullet->width / 2);
-    bullet->y -= bullet->height;
-    bullet->y_vel -= 1;
 
     LIST_INSERT_HEAD(&entity_list_head, bullet, entity_p);
 }
@@ -177,7 +192,7 @@ int main(int argc, char **argv) {
     } /* ... */
 
     {
-        player = spa_entity_create(0, 0, 0, 0);
+        player = spa_entity_create(SCREEN_W / 2, SCREEN_H / 2, 0, 0);
         if (!player) {
             fprintf(stderr, "spa_entity_create(): failed\n");
             goto cleanup;
@@ -218,11 +233,17 @@ int main(int argc, char **argv) {
                 if (bullet->y + bullet->height < 0) {
                     LIST_REMOVE(bullet, entity_p);
                 }
+
+                if (spa_entity_collide(bullet, player)) {
+                    player->health -= 5;
+                    LIST_REMOVE(bullet, entity_p);
+                }
             }
 
             if (redraw && al_is_event_queue_empty(event_queue)) {
                 redraw = false;
                 spa_render();
+                spa_osd();
             }
         }
     } /* ... */
@@ -231,6 +252,9 @@ cleanup:
     {
         spa_player_destroy();
         spa_bullet_destroy();
+
+        al_shutdown_font_addon();
+        al_shutdown_ttf_addon();
 
         if (player)
             spa_entity_destroy(player);

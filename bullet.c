@@ -28,9 +28,13 @@ bool spa_bullet_init(ALLEGRO_DISPLAY *display) {
     return true;
 }
 
-void spa_bullet_init_entity(entity* e) {
+void spa_bullet_init_entity(entity* bullet) {
 
-    spa_entity_init(e, bullet_bitmap);
+    spa_entity_init(bullet, bullet_bitmap);
+
+    bullet->x -= (bullet->width / 2);
+    bullet->y -= bullet->height;
+    bullet->y_vel -= 1;
 }
 
 void spa_bullet_destroy() {

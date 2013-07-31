@@ -1,5 +1,5 @@
 TARGET = spa
-LIBS = -lallegro
+LIBS = -lallegro -lallegro_font -lallegro_ttf -lm
 CC = gcc
 CFLAGS = -g -Wall -std=c99 -O3
 

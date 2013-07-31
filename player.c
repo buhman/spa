@@ -31,6 +31,8 @@ bool spa_player_init(ALLEGRO_DISPLAY *display) {
 void spa_player_init_entity(entity *e) {
     
     spa_entity_init(e, player_bitmap);
+
+    e->health = 100;
 }
 
 void spa_player_destroy() {
