@@ -89,7 +89,7 @@ void spa_render() {
 
     entity *bullet; 
     for (bullet = entity_list_head.lh_first; bullet != NULL; 
-            bullet = (entity*)bullet->entity_p.le_next) {
+            bullet = bullet->entity_p.le_next) {
 
         al_draw_bitmap(bullet->bitmap, bullet->x, bullet->y, 0);
     }
@@ -212,7 +212,7 @@ int main(int argc, char **argv) {
             spa_entity_update(player, SCREEN_W);
 
             for (bullet = entity_list_head.lh_first; bullet != NULL; 
-                    bullet = (entity*)bullet->entity_p.le_next) {
+                    bullet = bullet->entity_p.le_next) {
                 spa_entity_update(bullet, SCREEN_W);
 
                 if (bullet->y + bullet->height < 0) {
