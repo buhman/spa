@@ -9,6 +9,7 @@
 #include "entity.h"
 #include "player.h"
 #include "bullet.h"
+#include "hater.h"
 
 ALLEGRO_DISPLAY *display;
 ALLEGRO_EVENT_QUEUE *event_queue;
@@ -16,7 +17,10 @@ ALLEGRO_TIMER *timer;
 ALLEGRO_FONT *font;
 
 entity *player;
-LIST_HEAD(entity_list, entity) entity_list_head;
+entity_list *bullet_list_head;
+entity_list *hater_list_head;
+
+int score;
 
 bool spa_init() {
     {
@@ -77,7 +81,15 @@ bool spa_init() {
             fprintf(stderr, "spa_bullet_init(): failed\n");
             return false;
         }
-    }
+    } /* ... */
+
+    {
+        if (!spa_hater_init(display)) {
+            fprintf(stderr, "spa_hater_init(): failed\n");
+            return false;
+        }
+    } /* ... */
+
     {
         al_init_font_addon();
         al_init_ttf_addon();
@@ -86,10 +98,17 @@ bool spa_init() {
             fprintf(stderr, "al_load_font(): failed\n");
             return false;
         }
-    }
+    } /* ... */
+
     {
-        LIST_INIT(&entity_list_head);
-    }
+        bullet_list_head = malloc(sizeof(entity_list));
+        LIST_INIT(bullet_list_head);
+    } /* ... */
+
+    {
+        hater_list_head = malloc(sizeof(entity_list));
+        LIST_INIT(hater_list_head);
+    } /* ... */
 
     return true;
 }
@@ -100,11 +119,21 @@ void spa_render() {
 
     al_draw_bitmap(player->bitmap, player->x, player->y, 0);
 
-    entity *bullet; 
-    for (bullet = entity_list_head.lh_first; bullet != NULL; 
-            bullet = bullet->entity_p.le_next) {
+    {
+        entity *bullet; 
+        for (bullet = bullet_list_head->lh_first; bullet != NULL; 
+                bullet = bullet->entity_p.le_next) {
 
-        al_draw_bitmap(bullet->bitmap, bullet->x, bullet->y, 0);
+            al_draw_bitmap(bullet->bitmap, bullet->x, bullet->y, 0);
+        }
+    }
+    {
+        entity *hater;
+        for (hater = hater_list_head->lh_first; hater != NULL;
+                hater = hater->entity_p.le_next) {
+
+            al_draw_bitmap(hater->bitmap, hater->x, hater->y, 0);
+        }
     }
 }
 
@@ -114,15 +143,6 @@ void spa_osd() {
             "health: %d", player->health);
 
     al_flip_display();
-}
-
-void spa_add_bullet(int x, int y, int x_vel, int y_vel) {
-
-
-    entity *bullet = spa_entity_create(x, y, x_vel, y_vel);
-    spa_bullet_init_entity(bullet);
-
-    LIST_INSERT_HEAD(&entity_list_head, bullet, entity_p);
 }
 
 bool spa_loop(bool *redraw) {
@@ -152,7 +172,7 @@ bool spa_loop(bool *redraw) {
                 player->x_vel = PLAYER_VEL;
                 break;
             case ALLEGRO_KEY_SPACE:
-                spa_add_bullet(player->x + (player->width / 2),
+                spa_add_bullet(bullet_list_head, player->x + (player->width / 2),
                         player->y, player->x_vel, player->y_vel);
                 break;
         }
@@ -185,6 +205,7 @@ bool spa_loop(bool *redraw) {
 int main(int argc, char **argv) {
 
     bool redraw = true;
+    score = 0;
 
     {
         if (!spa_init())
@@ -200,6 +221,10 @@ int main(int argc, char **argv) {
 
         spa_player_init_entity(player);
     } /* ... */
+
+    {
+        spa_create_haters(hater_list_head, SCREEN_W, SCREEN_H, 5);
+    }
 
     {
         al_register_event_source(event_queue, 
@@ -221,12 +246,13 @@ int main(int argc, char **argv) {
 
     {
         entity *bullet;
+        entity *hater;
 
         while(!spa_loop(&redraw)) {
 
             spa_entity_update(player, SCREEN_W);
 
-            for (bullet = entity_list_head.lh_first; bullet != NULL; 
+            for (bullet = bullet_list_head->lh_first; bullet != NULL; 
                     bullet = bullet->entity_p.le_next) {
                 spa_entity_update(bullet, SCREEN_W);
 
@@ -237,6 +263,18 @@ int main(int argc, char **argv) {
                 if (spa_entity_collide(bullet, player)) {
                     player->health -= 5;
                     LIST_REMOVE(bullet, entity_p);
+                }
+
+                for (hater = hater_list_head->lh_first; hater != NULL;
+                        hater = hater->entity_p.le_next) {
+
+                    if (spa_entity_collide(bullet, hater)) {
+                        hater->health -= 5;
+                        LIST_REMOVE(bullet, entity_p);
+
+                        if (hater->health < 0)
+                            LIST_REMOVE(hater, entity_p);
+                    }
                 }
             }
 
@@ -252,6 +290,7 @@ cleanup:
     {
         spa_player_destroy();
         spa_bullet_destroy();
+        spa_hater_destroy();
 
         al_shutdown_font_addon();
         al_shutdown_ttf_addon();

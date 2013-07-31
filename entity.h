@@ -4,6 +4,7 @@
 #include <sys/queue.h>
 
 typedef struct entity entity;
+typedef struct entity_list entity_list;
 
 struct entity {
     int x;
@@ -17,7 +18,7 @@ struct entity {
 	LIST_ENTRY(entity) entity_p;
 };
 
-//LIST_HEAD(entity_list, entity) entity_list_head;
+LIST_HEAD(entity_list, entity);
 
 entity* spa_entity_create(int, int, int, int);
 

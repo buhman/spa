@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <sys/queue.h>
 #include <allegro5/allegro.h>
 
 #include "entity.h"
@@ -40,4 +41,12 @@ void spa_bullet_init_entity(entity* bullet) {
 void spa_bullet_destroy() {
     if (bullet_bitmap)
         al_destroy_bitmap(bullet_bitmap);
+}
+
+void spa_add_bullet(entity_list *lh, int x, int y, int x_vel, int y_vel) {
+
+    entity *bullet = spa_entity_create(x, y, x_vel, y_vel);
+    spa_bullet_init_entity(bullet);
+
+    LIST_INSERT_HEAD(lh, bullet, entity_p);
 }
