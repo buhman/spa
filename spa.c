@@ -203,9 +203,11 @@ bool spa_loop(bool *redraw) {
                 player->x_vel = PLAYER_VEL;
                 break;
             case ALLEGRO_KEY_SPACE:
-                spa_add_bullet(bullet_list_head, player->x + (player->width / 2),
-                        player->y, player->x_vel, player->y_vel);
-                score -= 1;
+                if (score > 0) {
+                    spa_add_bullet(bullet_list_head, player->x + (player->width / 2),
+                            player->y, player->x_vel, player->y_vel);
+                    score -= 1;
+                }
                 break;
         }
     }
@@ -237,7 +239,7 @@ bool spa_loop(bool *redraw) {
 int main(int argc, char **argv) {
 
     bool redraw = true;
-    score = 0;
+    score = 10;
 
     {
         if (!spa_init())
