@@ -23,11 +23,20 @@ entity_list *hater_list_head;
 
 int score;
 
+void print_version(char* text, int v) {
+
+    fprintf(stdout, "%s version: %d.%d.%dr%d\n", text,
+            v >> 24, (v >> 16) & 255, (v >> 8) & 255, v & 255);
+}
+
 bool spa_init() {
     {
         if (!al_init()) {
             fprintf(stderr, "al_init(): failed\n");
             return false;
+        }
+        else {
+            print_version("allegro", al_get_allegro_version());
         }
     } /* ... */
 
@@ -99,12 +108,24 @@ bool spa_init() {
             fprintf(stderr, "al_load_font(): failed\n");
             return false;
         }
+        else {
+            /*
+            print_version("allegro_font", al_get_allegro_font_version());
+            print_version("allegro_ttf", al_get_allegro_ttf_version());
+            */
+        }
     } /* ... */
 
     {
         if (!al_init_primitives_addon()) {
             fprintf(stderr, "al_init_primitives_addon(): failed\n");
             return false;
+        }
+        else {
+            /*
+            print_version("allegro_primitives", 
+                    al_get_allegro_primitives_version());
+            */
         }
     } /* ... */
 
@@ -231,7 +252,7 @@ int main(int argc, char **argv) {
     } /* ... */
 
     {
-        spa_create_haters(hater_list_head, SCREEN_W, SCREEN_H, 5);
+        spa_create_haters(hater_list_head, SCREEN_W, SCREEN_H, 10);
     }
 
     {
@@ -264,6 +285,7 @@ int main(int argc, char **argv) {
                 if (bullet->y + bullet->height < 0) {
                     LIST_REMOVE(bullet, entity_p);
                     //spa_entity_destroy(bullet);
+                    fprintf(stderr, "bug: bullet %p not freed!\n", bullet);
                     continue;
                 }
 
@@ -271,6 +293,7 @@ int main(int argc, char **argv) {
                     player->health -= 5;
                     LIST_REMOVE(bullet, entity_p);
                     //spa_entity_destroy(bullet);
+                    fprintf(stderr, "bug: bullet %p not freed!\n", bullet);
                     continue;
                 }
 
@@ -281,6 +304,7 @@ int main(int argc, char **argv) {
                         hater->health -= 5;
                         LIST_REMOVE(bullet, entity_p);
                         //spa_entity_destroy(bullet);
+                        fprintf(stderr, "bug: bullet %p not freed!\n", bullet);
 
                         if (hater->health < 0) {
                             LIST_REMOVE(hater, entity_p);
