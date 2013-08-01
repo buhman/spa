@@ -328,10 +328,17 @@ int main(int argc, char **argv) {
                 continue;
             }
 
-            for (hater = hater_list_head->lh_first; hater != NULL;
-                    hater = hater->entity_p.le_next) {
-                
+            hater = hater_list_head->lh_first;
+            while (hater != NULL) {
+                if (spa_entity_collide(player, hater)) {
+                    score += 5;
+                    player->health -= 10;
+                    hater = spa_remove_entity(hater);
+                    continue;
+                }
+
                 spa_entity_update(hater, SCREEN_W);
+                hater = hater->entity_p.le_next;
             }
 
             spa_entity_update(player, SCREEN_W);
