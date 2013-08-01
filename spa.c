@@ -205,6 +205,7 @@ bool spa_loop(bool *redraw) {
             case ALLEGRO_KEY_SPACE:
                 spa_add_bullet(bullet_list_head, player->x + (player->width / 2),
                         player->y, player->x_vel, player->y_vel);
+                score -= 1;
                 break;
         }
     }
