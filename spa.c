@@ -168,8 +168,10 @@ void spa_render() {
 
 void spa_osd() {
 
-    al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, ALLEGRO_ALIGN_LEFT,
+    al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 2, ALLEGRO_ALIGN_LEFT,
             "health: %d", player->health);
+    al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 14, ALLEGRO_ALIGN_LEFT,
+            "score: %d", score);
 
     al_flip_display();
 }
@@ -302,6 +304,7 @@ int main(int argc, char **argv) {
                     while (hater != NULL) {
                         if (spa_entity_collide(bullet, hater)) {
 
+                            score += 10;
                             hater->health -= 5;
                             bullet = spa_remove_entity(bullet);
 
