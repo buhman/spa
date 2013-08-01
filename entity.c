@@ -78,3 +78,10 @@ bool spa_entity_collide(entity *e1, entity *e2) {
         return false;
     return true;
 }
+
+entity* spa_remove_entity(entity* e) {
+    LIST_REMOVE(e, entity_p);
+    entity *e2 = e->entity_p.le_next;
+    spa_entity_destroy(e);
+    return e2;
+}

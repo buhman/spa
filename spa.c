@@ -278,44 +278,51 @@ int main(int argc, char **argv) {
         entity *hater;
 
         while(!spa_loop(&redraw)) {
-
-            for (bullet = bullet_list_head->lh_first; bullet != NULL; 
-                    bullet = bullet->entity_p.le_next) {
-
-                if (bullet->y + bullet->height < 0) {
-                    LIST_REMOVE(bullet, entity_p);
-                    //spa_entity_destroy(bullet);
-                    fprintf(stderr, "bug: bullet %p not freed!\n", bullet);
-                    continue;
-                }
-
-                if (spa_entity_collide(bullet, player)) {
-                    player->health -= 5;
-                    LIST_REMOVE(bullet, entity_p);
-                    //spa_entity_destroy(bullet);
-                    fprintf(stderr, "bug: bullet %p not freed!\n", bullet);
-                    continue;
-                }
-
-                for (hater = hater_list_head->lh_first; hater != NULL;
-                        hater = hater->entity_p.le_next) {
-
-                    if (spa_entity_collide(bullet, hater)) {
-                        hater->health -= 5;
-                        LIST_REMOVE(bullet, entity_p);
-                        //spa_entity_destroy(bullet);
-                        fprintf(stderr, "bug: bullet %p not freed!\n", bullet);
-
-                        if (hater->health < 0) {
-                            LIST_REMOVE(hater, entity_p);
-                            spa_entity_destroy(hater);
-                        }
-                        break;
-                    }
-                }
+            
+            bullet = bullet_list_head->lh_first;
+            while (bullet != NULL) {
                 
-                if (bullet)
-                    spa_entity_update(bullet, SCREEN_W);
+                {
+                    if (bullet->y + bullet->height < 0) {
+                        bullet = spa_remove_entity(bullet);
+                        goto bullet_loop_end;
+                    }
+                } /* ... */
+                
+                {
+                    if (spa_entity_collide(bullet, player)) {
+                        player->health -= 5;
+                        bullet = spa_remove_entity(bullet);
+                        goto bullet_loop_end;
+                    }
+                } /* ... */
+
+                {
+                    hater = hater_list_head->lh_first;
+                    while (hater != NULL) {
+                        if (spa_entity_collide(bullet, hater)) {
+
+                            hater->health -= 5;
+                            bullet = spa_remove_entity(bullet);
+
+                            if (hater->health < 0) {
+                                // this isn't used anyway, since we go 
+                                // immediately to the next bullet
+                                hater = spa_remove_entity(hater);
+                            }
+                            
+                            goto bullet_loop_end;
+                        }
+
+                        hater = hater->entity_p.le_next;
+                    }
+                } /* ... */
+
+                spa_entity_update(bullet, SCREEN_W);
+                bullet = bullet->entity_p.le_next;
+
+            bullet_loop_end:
+                continue;
             }
 
             for (hater = hater_list_head->lh_first; hater != NULL;

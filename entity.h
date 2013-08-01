@@ -30,3 +30,5 @@ void spa_entity_destroy(entity*);
 void spa_entity_update(entity*, int);
 
 bool spa_entity_collide(entity*, entity*);
+
+entity* spa_remove_entity(entity*);
