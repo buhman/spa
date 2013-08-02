@@ -1,4 +1,6 @@
 #include <stdio.h>
+#define __USE_BSD
+#include <math.h>
 #include <sys/queue.h>
 #include <allegro5/allegro.h>
 
@@ -33,7 +35,6 @@ void spa_bullet_init_entity(entity* bullet) {
 
     spa_entity_init(bullet, bullet_bitmap);
 
-    bullet->y -= bullet->height / 2;
     bullet->y_vel -= 1;
 }
 
@@ -44,8 +45,8 @@ void spa_bullet_destroy() {
 
 void spa_add_bullet(entity_list *lh, entity *e) {
     
-    int x = e->x;
-    int y = e->y;
+    int x = e->x + ((BULLET_HEIGHT + e->width) * cos(e->angle - M_PI_2) / 1.4);
+    int y = e->y + ((BULLET_HEIGHT + e->height) * sin(e->angle - M_PI_2) / 1.4);
 
     entity *bullet = spa_entity_create(x, y, e->x_vel, e->y_vel);
     spa_bullet_init_entity(bullet);

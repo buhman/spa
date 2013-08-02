@@ -312,8 +312,8 @@ int main(int argc, char **argv) {
                 {
                     if (spa_entity_collide(bullet, player)) {
                         player->health -= 5;
-                        bullet = spa_remove_entity(bullet);
-                        goto bullet_loop_end;
+                        //bullet = spa_remove_entity(bullet);
+                        //goto bullet_loop_end;
                     }
                 } /* ... */
 
