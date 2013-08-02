@@ -148,8 +148,6 @@ void spa_render() {
 
     spa_draw_entity(player);
 
-    player->angle += 0.0314;
-
     {
         entity *bullet; 
         for (bullet = bullet_list_head->lh_first; bullet != NULL; 
@@ -164,7 +162,6 @@ void spa_render() {
                 hater = hater->entity_p.le_next) {
     
             spa_draw_entity(hater);
-            hater->angle += 0.0314;
         }
     }
 }
@@ -207,8 +204,8 @@ bool spa_loop(bool *redraw) {
                 break;
             case ALLEGRO_KEY_SPACE:
                 if (score > 0) {
-                    spa_add_bullet(bullet_list_head, player->x + (player->width / 2),
-                            player->y, player->x_vel, player->y_vel);
+                    spa_add_bullet(bullet_list_head, player->x,
+                            player->y - player->height / 2, player->x_vel, player->y_vel);
                     score -= 1;
                 }
                 break;
