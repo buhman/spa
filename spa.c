@@ -198,11 +198,17 @@ bool spa_loop(bool *redraw) {
             case ALLEGRO_KEY_S:
                 player->y_vel = PLAYER_VEL;
                 break;
-            case ALLEGRO_KEY_A:
+            case ALLEGRO_KEY_Q:
                 player->x_vel = -PLAYER_VEL;
                 break;
-            case ALLEGRO_KEY_D:
+            case ALLEGRO_KEY_E:
                 player->x_vel = PLAYER_VEL;
+                break;
+            case ALLEGRO_KEY_A:
+                player->angle_vel = -PLAYER_THETA;
+                break;
+            case ALLEGRO_KEY_D:
+                player->angle_vel = PLAYER_THETA;
                 break;
             case ALLEGRO_KEY_SPACE:
                 if (score > 0) {
@@ -224,13 +230,21 @@ bool spa_loop(bool *redraw) {
                 if (player->y_vel > 0)
                     player->y_vel = 0;
                 break;
-            case ALLEGRO_KEY_A:
+            case ALLEGRO_KEY_Q:
                 if (player->x_vel < 0)
                     player->x_vel = 0;
                 break;
-            case ALLEGRO_KEY_D:
+            case ALLEGRO_KEY_E:
                 if (player->x_vel > 0)
                     player->x_vel = 0;
+                break;
+            case ALLEGRO_KEY_A:
+                if (player->angle_vel < 0)
+                    player->angle_vel = 0;
+                break;
+            case ALLEGRO_KEY_D:
+                if (player->angle_vel > 0)
+                    player->angle_vel = 0;
                 break;
         }
     }

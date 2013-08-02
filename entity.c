@@ -28,6 +28,7 @@ entity* spa_entity_create(int x, int y, int x_vel, int y_vel) {
         e->health = 1;
         e->type = 0;
         e->angle = 0;
+        e->angle_vel = 0;
         e->bitmap = NULL;
     } /* ... */
 
@@ -53,6 +54,7 @@ void spa_entity_destroy(entity *e) {
 
 void spa_entity_update(entity *e, int screen_width) {
 
+    e->angle += e->angle_vel;
     e->x += e->y_vel * cos(e->angle + M_PI_2);
     e->y += e->y_vel * sin(e->angle + M_PI_2);
     e->x += e->x_vel * cos(e->angle);

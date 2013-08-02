@@ -15,6 +15,7 @@ struct entity {
     int height;
     int health;
     int type;
+    float angle_vel;
     float angle;
     ALLEGRO_BITMAP *bitmap;
 	LIST_ENTRY(entity) entity_p;
