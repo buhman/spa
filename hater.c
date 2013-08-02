@@ -21,7 +21,11 @@ bool spa_hater_init(ALLEGRO_DISPLAY *display) {
 
     {
         al_set_target_bitmap(hater_bitmap);
-        al_clear_to_color(al_map_rgb(0, 255, 255));
+        
+        al_clear_to_color(al_map_rgba(0, 0, 0, 0));
+        al_draw_circle(HATER_WIDTH / 2, HATER_HEIGHT / 2, HATER_WIDTH / 3
+            al_map_rgb(255, 255, 0), 1)
+
         al_set_target_bitmap(al_get_backbuffer(display));
     } /* ... */
 

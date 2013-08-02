@@ -42,10 +42,14 @@ void spa_bullet_destroy() {
         al_destroy_bitmap(bullet_bitmap);
 }
 
-void spa_add_bullet(entity_list *lh, int x, int y, int x_vel, int y_vel) {
+void spa_add_bullet(entity_list *lh, entity *e) {
+    
+    int x = e->x;
+    int y = e->y;
 
-    entity *bullet = spa_entity_create(x, y, x_vel, y_vel);
+    entity *bullet = spa_entity_create(x, y, e->x_vel, e->y_vel);
     spa_bullet_init_entity(bullet);
+    bullet->angle = e->angle;
 
     LIST_INSERT_HEAD(lh, bullet, entity_p);
 }
