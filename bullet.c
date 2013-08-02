@@ -12,6 +12,8 @@ ALLEGRO_BITMAP *bullet_bitmap = NULL;
 const int BULLET_WIDTH = 4;
 const int BULLET_HEIGHT = 6;
 
+const int R = 1.4142135623730951;
+
 bool spa_bullet_init(ALLEGRO_DISPLAY *display) {
 
     {
@@ -44,9 +46,9 @@ void spa_bullet_destroy() {
 }
 
 void spa_add_bullet(entity_list *lh, entity *e) {
-    
-    int x = e->x + ((BULLET_HEIGHT + e->width) * cos(e->angle - M_PI_2) / 1.4);
-    int y = e->y + ((BULLET_HEIGHT + e->height) * sin(e->angle - M_PI_2) / 1.4);
+ 
+    int x = e->x + ((BULLET_HEIGHT + e->width) * cos(e->angle - M_PI_2) / R);
+    int y = e->y + ((BULLET_HEIGHT + e->height) * sin(e->angle - M_PI_2) / R);
 
     entity *bullet = spa_entity_create(x, y, e->x_vel, e->y_vel);
     spa_bullet_init_entity(bullet);
