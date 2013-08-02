@@ -146,22 +146,25 @@ void spa_render() {
 
     al_clear_to_color(al_map_rgb(10, 10, 20));
 
-    al_draw_bitmap(player->bitmap, player->x, player->y, 0);
+    spa_draw_entity(player);
+
+    player->angle += 0.0314;
 
     {
         entity *bullet; 
         for (bullet = bullet_list_head->lh_first; bullet != NULL; 
                 bullet = bullet->entity_p.le_next) {
-
-            al_draw_bitmap(bullet->bitmap, bullet->x, bullet->y, 0);
+            
+            spa_draw_entity(bullet);
         }
     }
     {
         entity *hater;
         for (hater = hater_list_head->lh_first; hater != NULL;
                 hater = hater->entity_p.le_next) {
-
-            al_draw_bitmap(hater->bitmap, hater->x, hater->y, 0);
+    
+            spa_draw_entity(hater);
+            hater->angle += 0.0314;
         }
     }
 }

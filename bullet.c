@@ -33,8 +33,7 @@ void spa_bullet_init_entity(entity* bullet) {
 
     spa_entity_init(bullet, bullet_bitmap);
 
-    bullet->x -= (bullet->width / 2);
-    bullet->y -= bullet->height;
+    bullet->y -= bullet->height / 2;
     bullet->y_vel -= 1;
 }
 

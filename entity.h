@@ -15,6 +15,7 @@ struct entity {
     int height;
     int health;
     int type;
+    float angle;
     ALLEGRO_BITMAP *bitmap;
 	LIST_ENTRY(entity) entity_p;
 };
@@ -30,5 +31,7 @@ void spa_entity_destroy(entity*);
 void spa_entity_update(entity*, int);
 
 bool spa_entity_collide(entity*, entity*);
+
+void spa_draw_entity(entity*);
 
 entity* spa_remove_entity(entity*);

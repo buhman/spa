@@ -32,8 +32,6 @@ void spa_hater_init_entity(entity* hater) {
 
     spa_entity_init(hater, hater_bitmap);
 
-    hater->x -= (hater->width / 2);
-    hater->y -= hater->height;
     hater->type = rand();
 }
 
