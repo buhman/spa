@@ -24,6 +24,7 @@ entity_list *bullet_list_head;
 entity_list *hater_list_head;
 
 int score;
+int level;
 
 void print_version(char* text, int v) {
 
@@ -174,6 +175,9 @@ void spa_osd() {
             "health: %d", player->health);
     al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 14, ALLEGRO_ALIGN_LEFT,
             "score: %d", score);
+    al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 26, ALLEGRO_ALIGN_LEFT,
+            "level: %d", level);
+
 
     if (player->health <= 0) {
         al_draw_text(font, al_map_rgb(255, 255, 255), SCREEN_W / 2, SCREEN_H / 2,
@@ -330,12 +334,8 @@ int main(int argc, char **argv) {
                 
                 {
                     if (spa_entity_collide(bullet, player)) {
-                        if (player->health - 5 < 0) {
-                            player->health = 0;
-                            al_stop_timer(timer);
-                        }
-                        else
-                            player->health -= 5;
+
+                        spa_player_damage(player, 5, timer);
 
                         bullet = spa_remove_entity(bullet);
                         goto bullet_loop_end;
@@ -351,7 +351,7 @@ int main(int argc, char **argv) {
                             hater->health -= 5;
                             bullet = spa_remove_entity(bullet);
 
-                            if (hater->health < 0) {
+                            if (hater->health <= 0) {
                                 // this isn't used anyway, since we go 
                                 // immediately to the next bullet
                                 hater = spa_remove_entity(hater);
@@ -375,14 +375,20 @@ int main(int argc, char **argv) {
             while (hater != NULL) {
                 if (spa_entity_collide(player, hater)) {
                     score += 5;
-                    player->health -= 10;
+                    spa_player_damage(player, 10, timer);
                     hater = spa_remove_entity(hater);
                     continue;
                 }
 
-                spa_hater_update(hater, player, bullet_list_head);
+                spa_hater_update(hater, player, bullet_list_head, level);
                 spa_entity_update(hater, SCREEN_W);
                 hater = hater->entity_p.le_next;
+            }
+
+            if (hater_list_head->lh_first == NULL) {
+                level++;
+                spa_clear_entity_list(bullet_list_head);
+                spa_create_haters(hater_list_head, SCREEN_W, SCREEN_H, 10 + level);
             }
 
             spa_entity_update(player, SCREEN_W);

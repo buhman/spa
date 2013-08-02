@@ -68,7 +68,7 @@ void spa_hater_destroy() {
         al_destroy_bitmap(hater_bitmap);
 }
 
-void spa_hater_update(entity* hater, entity* player, entity_list *lh) {
+void spa_hater_update(entity* hater, entity* player, entity_list *lh, int level) {
     
     {
         float o = (hater->y - player->y);
@@ -80,7 +80,8 @@ void spa_hater_update(entity* hater, entity* player, entity_list *lh) {
     } /* ... */
 
     {
-        if (al_get_time() - hater->last_update > 1.5) {
+        float delay = 10.f / level;
+        if (al_get_time() - hater->last_update > delay) {
             
             spa_add_bullet(lh, hater);
 

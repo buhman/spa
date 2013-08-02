@@ -51,3 +51,13 @@ void spa_player_destroy() {
     if (player_bitmap)
         al_destroy_bitmap(player_bitmap);
 }
+
+void spa_player_damage(entity* player, int damage, ALLEGRO_TIMER *timer) {
+
+    if (player->health - damage <= 0) {
+        player->health = 0;
+        al_stop_timer(timer);
+    }
+    else
+        player->health -= damage;
+}
