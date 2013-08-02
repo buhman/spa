@@ -1,4 +1,6 @@
 #include <stdio.h>
+#define __USE_BSD
+#include <math.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
 
@@ -9,6 +11,7 @@ ALLEGRO_BITMAP *hater_bitmap = NULL;
 
 const int HATER_WIDTH = 20;
 const int HATER_HEIGHT = 20;
+const int HATER_THETA = M_PI_4 / 5;
 
 bool spa_hater_init(ALLEGRO_DISPLAY *display) {
 
@@ -64,13 +67,23 @@ void spa_hater_destroy() {
         al_destroy_bitmap(hater_bitmap);
 }
 
+void spa_hater_update(entity* hater, entity* player) {
+    
+    float o = (hater->y - player->y);
+    float a = (hater->x - player->x);
+
+    float theta = atan2(o, a);
+
+    hater->angle = theta - M_PI_2 ; //FIXME
+}
+
 void spa_create_haters(entity_list* lh, int screen_width, 
         int screen_height, int number) {
  
     for (int i = 0; i < number; i++) {
     
         entity *hater = spa_entity_create(rand() % screen_width, 
-                rand() % screen_height / 2 + HATER_WIDTH, rand() % 3 - 1, 0);
+                rand() % screen_height / 2 + HATER_WIDTH, 0, -(rand() % 2));
         spa_hater_init_entity(hater);
 
         LIST_INSERT_HEAD(lh, hater, entity_p);
