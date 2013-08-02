@@ -94,10 +94,12 @@ void spa_draw_entity(entity *e) {
             e->x, e->y,
             e->angle, 0);
 
-    al_draw_rectangle(e->x - (e->width / 2), 
-            e->y - (e->height / 2), 
-            e->x + (e->width / 2),
-            e->y + (e->height / 2),
+    int e_x2 = fmax(e->x, e->x + e->x_vel) + e->width / 2;
+    int e_x1 = fmin(e->x, e->x + e->x_vel) - e->width / 2;
+    int e_y2 = fmax(e->y, e->y + e->y_vel) + e->height / 2;
+    int e_y1 = fmin(e->y, e->y + e->y_vel) - e->width / 2;
+
+    al_draw_rectangle(e_x1, e_y1, e_x2, e_y2,
             al_map_rgb(50, 50, 50), 1);
 }
 

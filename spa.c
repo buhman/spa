@@ -355,7 +355,7 @@ int main(int argc, char **argv) {
                     continue;
                 }
 
-                spa_hater_update(hater, player);
+                spa_hater_update(hater, player, bullet_list_head);
                 spa_entity_update(hater, SCREEN_W);
                 hater = hater->entity_p.le_next;
             }

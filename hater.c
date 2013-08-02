@@ -6,6 +6,7 @@
 
 #include "entity.h"
 #include "hater.h"
+#include "bullet.h"
 
 ALLEGRO_BITMAP *hater_bitmap = NULL;
 
@@ -67,14 +68,25 @@ void spa_hater_destroy() {
         al_destroy_bitmap(hater_bitmap);
 }
 
-void spa_hater_update(entity* hater, entity* player) {
+void spa_hater_update(entity* hater, entity* player, entity_list *lh) {
     
-    float o = (hater->y - player->y);
-    float a = (hater->x - player->x);
+    {
+        float o = (hater->y - player->y);
+        float a = (hater->x - player->x);
 
-    float theta = atan2(o, a);
+        float theta = atan2(o, a);
 
-    hater->angle = theta - M_PI_2 ; //FIXME
+        hater->angle = theta - M_PI_2;
+    } /* ... */
+
+    {
+        if (al_get_time() - hater->last_update > 1.5) {
+            
+            spa_add_bullet(lh, hater);
+
+            hater->last_update = al_get_time();
+        }
+    } /* ... */
 }
 
 void spa_create_haters(entity_list* lh, int screen_width, 
@@ -83,7 +95,7 @@ void spa_create_haters(entity_list* lh, int screen_width,
     for (int i = 0; i < number; i++) {
     
         entity *hater = spa_entity_create(rand() % screen_width, 
-                rand() % screen_height / 2 + HATER_WIDTH, 0, -(rand() % 2));
+                rand() % screen_height / 2 + HATER_WIDTH, 0, 0);
         spa_hater_init_entity(hater);
 
         LIST_INSERT_HEAD(lh, hater, entity_p);
