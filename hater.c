@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <allegro5/allegro.h>
+#include <allegro5/allegro_primitives.h>
 
 #include "entity.h"
 #include "hater.h"
@@ -20,11 +21,30 @@ bool spa_hater_init(ALLEGRO_DISPLAY *display) {
     } /* ... */
 
     {
+        int width = HATER_WIDTH - 1;
+        int height = HATER_HEIGHT - 1;
+
         al_set_target_bitmap(hater_bitmap);
         
         al_clear_to_color(al_map_rgba(0, 0, 0, 0));
-        al_draw_circle(HATER_WIDTH / 2, HATER_HEIGHT / 2, HATER_WIDTH / 3
-            al_map_rgb(255, 255, 0), 1)
+
+        al_draw_circle(
+            width / 2, 
+            height / 2 + height / 6, 
+            width / 2.8,
+            al_map_rgb(0, 255, 255), 1);
+
+        al_draw_circle(
+            width / 8, 
+            height / 8, 
+            width / 6,
+            al_map_rgb(0, 255, 255), 1);
+
+        al_draw_circle(
+            width - width / 8, 
+            height / 8, 
+            width / 6,
+            al_map_rgb(0, 255, 255), 1);
 
         al_set_target_bitmap(al_get_backbuffer(display));
     } /* ... */
