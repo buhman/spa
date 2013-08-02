@@ -37,3 +37,5 @@ bool spa_entity_collide(entity*, entity*);
 void spa_draw_entity(entity*);
 
 entity* spa_remove_entity(entity*);
+
+void spa_clear_entity_list(entity_list*);

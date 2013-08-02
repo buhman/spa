@@ -175,7 +175,38 @@ void spa_osd() {
     al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 14, ALLEGRO_ALIGN_LEFT,
             "score: %d", score);
 
+    if (player->health <= 0) {
+        al_draw_text(font, al_map_rgb(255, 255, 255), SCREEN_W / 2, SCREEN_H / 2,
+                ALLEGRO_ALIGN_CENTER, "you died");
+        al_draw_text(font, al_map_rgb(255, 255, 255), SCREEN_W / 2, SCREEN_H / 2 + 12,
+                ALLEGRO_ALIGN_CENTER, "(press [BACKSPACE] to restart)");
+    }
+
     al_flip_display();
+}
+
+void spa_game_reset() {
+    
+    score = 10;
+
+    {
+        spa_clear_entity_list(hater_list_head);
+        spa_clear_entity_list(bullet_list_head);
+    } /* ... */
+
+    {
+        if (player)
+            free(player);
+
+        player = spa_entity_create(SCREEN_W / 2, SCREEN_H - (SCREEN_H / 4), 0, 0);
+        spa_player_init_entity(player);
+    } /* ... */
+
+    {
+        spa_create_haters(hater_list_head, SCREEN_W, SCREEN_H, 10);
+    } /* ... */
+
+    al_start_timer(timer);
 }
 
 bool spa_loop(bool *redraw) {
@@ -189,7 +220,7 @@ bool spa_loop(bool *redraw) {
     }
     else if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
         return true;
-
+    
     else if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
         switch (ev.keyboard.keycode) {
             case ALLEGRO_KEY_W:
@@ -215,6 +246,9 @@ bool spa_loop(bool *redraw) {
                     spa_add_bullet(bullet_list_head, player);
                     score -= 1;
                 }
+                break;
+            case ALLEGRO_KEY_BACKSPACE:
+                spa_game_reset();
                 break;
         }
     }
@@ -254,26 +288,11 @@ bool spa_loop(bool *redraw) {
 int main(int argc, char **argv) {
 
     bool redraw = true;
-    score = 10;
 
     {
         if (!spa_init())
             goto cleanup;
     } /* ... */
-
-    {
-        player = spa_entity_create(SCREEN_W / 2, SCREEN_H - (SCREEN_H / 4), 0, 0);
-        if (!player) {
-            fprintf(stderr, "spa_entity_create(): failed\n");
-            goto cleanup;
-        }
-
-        spa_player_init_entity(player);
-    } /* ... */
-
-    {
-        spa_create_haters(hater_list_head, SCREEN_W, SCREEN_H, 10);
-    }
 
     {
         al_register_event_source(event_queue, 
@@ -289,9 +308,9 @@ int main(int argc, char **argv) {
            al_register_event_source(event_queue,
            al_get_mouse_event_source());
            */
-
-        al_start_timer(timer);
     } /* ... */
+
+    spa_game_reset();
 
     {
         entity *bullet;
@@ -311,7 +330,13 @@ int main(int argc, char **argv) {
                 
                 {
                     if (spa_entity_collide(bullet, player)) {
-                        player->health -= 5;
+                        if (player->health - 5 < 0) {
+                            player->health = 0;
+                            al_stop_timer(timer);
+                        }
+                        else
+                            player->health -= 5;
+
                         bullet = spa_remove_entity(bullet);
                         goto bullet_loop_end;
                     }

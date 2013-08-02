@@ -109,3 +109,11 @@ entity* spa_remove_entity(entity* e) {
     spa_entity_destroy(e);
     return e2;
 }
+
+void spa_clear_entity_list(entity_list* lh) {
+
+    entity *e = lh->lh_first;
+    while (e != NULL) {
+        e = spa_remove_entity(e);
+    }
+}
