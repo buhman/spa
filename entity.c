@@ -1,4 +1,5 @@
 #include <stdio.h>
+#define __USE_BSD
 #include <math.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
@@ -26,7 +27,7 @@ entity* spa_entity_create(int x, int y, int x_vel, int y_vel) {
         e->height = 0;
         e->health = 1;
         e->type = 0;
-        e->angle = 0.7853; //TODO
+        e->angle = 0;
         e->bitmap = NULL;
     } /* ... */
 
@@ -52,8 +53,10 @@ void spa_entity_destroy(entity *e) {
 
 void spa_entity_update(entity *e, int screen_width) {
 
-    e->x += e->x_vel;
-    e->y += e->y_vel;
+    e->x += e->y_vel * cos(e->angle + M_PI_2);
+    e->y += e->y_vel * sin(e->angle + M_PI_2);
+    e->x += e->x_vel * cos(e->angle);
+    e->y += e->x_vel * sin(e->angle);
 
     if (e->x + e->x_vel < 0)
         e->x = screen_width - e->width;

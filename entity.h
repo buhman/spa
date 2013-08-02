@@ -7,10 +7,10 @@ typedef struct entity entity;
 typedef struct entity_list entity_list;
 
 struct entity {
-    int x;
-    int y;
-    int x_vel;
-    int y_vel;
+    float x;
+    float y;
+    float x_vel;
+    float y_vel;
     int width;
     int height;
     int health;

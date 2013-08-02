@@ -1,4 +1,6 @@
 #include <stdio.h>
+#define __USE_BSD
+#include <math.h>
 #include <sys/queue.h>
 
 #include <allegro5/allegro.h>
