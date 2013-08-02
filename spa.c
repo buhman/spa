@@ -193,22 +193,22 @@ bool spa_loop(bool *redraw) {
     else if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
         switch (ev.keyboard.keycode) {
             case ALLEGRO_KEY_W:
-                player->y_vel = -PLAYER_VEL;
+                player->y_accel = -0.1;
                 break;
             case ALLEGRO_KEY_S:
-                player->y_vel = PLAYER_VEL;
+                player->y_accel = 0.1;
                 break;
             case ALLEGRO_KEY_Q:
-                player->x_vel = -PLAYER_VEL;
+                player->x_accel = -0.1;
                 break;
             case ALLEGRO_KEY_E:
-                player->x_vel = PLAYER_VEL;
+                player->x_accel = 0.1;
                 break;
             case ALLEGRO_KEY_A:
-                player->angle_vel = -PLAYER_THETA;
+                player->theta_accel = -0.1;
                 break;
             case ALLEGRO_KEY_D:
-                player->angle_vel = PLAYER_THETA;
+                player->theta_accel = 0.00785398163;
                 break;
             case ALLEGRO_KEY_SPACE:
                 if (score > 0) {
@@ -222,28 +222,28 @@ bool spa_loop(bool *redraw) {
     else if (ev.type == ALLEGRO_EVENT_KEY_UP) {
         switch (ev.keyboard.keycode) {
             case ALLEGRO_KEY_W:
-                if (player->y_vel < 0)
-                    player->y_vel = 0;
+                if (player->y_accel < 0)
+                    player->y_accel = 0;
                 break;
             case ALLEGRO_KEY_S:
-                if (player->y_vel > 0)
-                    player->y_vel = 0;
+                if (player->y_accel > 0)
+                    player->y_accel = 0;
                 break;
             case ALLEGRO_KEY_Q:
-                if (player->x_vel < 0)
-                    player->x_vel = 0;
+                if (player->x_accel < 0)
+                    player->x_accel = 0;
                 break;
             case ALLEGRO_KEY_E:
-                if (player->x_vel > 0)
-                    player->x_vel = 0;
+                if (player->x_accel > 0)
+                    player->x_accel = 0;
                 break;
             case ALLEGRO_KEY_A:
-                if (player->angle_vel < 0)
-                    player->angle_vel = 0;
+                if (player->theta_accel < 0)
+                    player->theta_accel = 0;
                 break;
             case ALLEGRO_KEY_D:
-                if (player->angle_vel > 0)
-                    player->angle_vel = 0;
+                if (player->theta_accel > 0)
+                    player->theta_accel = 0;
                 break;
         }
     }
@@ -262,7 +262,7 @@ int main(int argc, char **argv) {
     } /* ... */
 
     {
-        player = spa_entity_create(SCREEN_W / 2, SCREEN_H - (SCREEN_H / 4), 0, 0);
+        player = spa_entity_create(SCREEN_W / 2, SCREEN_H - (SCREEN_H / 4), 0, 0, 0);
         if (!player) {
             fprintf(stderr, "spa_entity_create(): failed\n");
             goto cleanup;

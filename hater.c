@@ -11,7 +11,7 @@ ALLEGRO_BITMAP *hater_bitmap = NULL;
 
 const int HATER_WIDTH = 20;
 const int HATER_HEIGHT = 20;
-const int HATER_THETA = M_PI_4 / 5;
+const float HATER_THETA = M_PI_4 / 500000;
 
 bool spa_hater_init(ALLEGRO_DISPLAY *display) {
 
@@ -72,9 +72,11 @@ void spa_hater_update(entity* hater, entity* player) {
     float o = (hater->y - player->y);
     float a = (hater->x - player->x);
 
-    float theta = atan2(o, a);
+    float theta = atan2(o, a) - M_PI_2 - hater->theta;
 
-    hater->angle = theta - M_PI_2 ; //FIXME
+    //hater->theta = theta - M_PI_2; //FIXME
+
+    hater->theta_vel += theta / 1000.f;
 }
 
 void spa_create_haters(entity_list* lh, int screen_width, 
@@ -83,7 +85,7 @@ void spa_create_haters(entity_list* lh, int screen_width,
     for (int i = 0; i < number; i++) {
     
         entity *hater = spa_entity_create(rand() % screen_width, 
-                rand() % screen_height / 2 + HATER_WIDTH, 0, -(rand() % 2));
+                rand() % screen_height / 2 + HATER_WIDTH, 0, -(rand() % 2), M_PI);
         spa_hater_init_entity(hater);
 
         LIST_INSERT_HEAD(lh, hater, entity_p);
