@@ -1,0 +1,30 @@
+map:
+    possibly make world toridal?
+    or make the world scroll up/down?
+    haters drop powerups.
+
+movement/physics:
+    fix acceleration branch stuff?
+    make rotation slightly slower?
+    give objects mass and make them bounce on collision.
+
+leveling:
+    temporary invulnerability on level-up?
+    make ai spawn area either the entire "map" or north of "map", rather than in player view
+
+graphics:
+    develop explosion animation using pixels
+    a parallaxing 'star' background
+    represet more ship types graphically
+
+ai:
+    haters should selectively have following behavior
+    haters should not fire all quite at the same time; offset
+    different hater behaviors for different ship types.
+
+osd:
+    count number of bullets, haters, etc..
+
+bugs:
+    multiple shots fired too quickly by haters
+    some haters never seem to fire :S
