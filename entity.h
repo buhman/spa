@@ -7,14 +7,17 @@ typedef struct entity entity;
 typedef struct entity_list entity_list;
 
 struct entity {
-    int x;
-    int y;
-    int x_vel;
-    int y_vel;
+    float x;
+    float y;
+    float x_vel;
+    float y_vel;
     int width;
     int height;
     int health;
     int type;
+    int last_update;
+    float angle_vel;
+    float angle;
     ALLEGRO_BITMAP *bitmap;
 	LIST_ENTRY(entity) entity_p;
 };
@@ -30,3 +33,9 @@ void spa_entity_destroy(entity*);
 void spa_entity_update(entity*, int);
 
 bool spa_entity_collide(entity*, entity*);
+
+void spa_draw_entity(entity*);
+
+entity* spa_remove_entity(entity*);
+
+void spa_clear_entity_list(entity_list*);

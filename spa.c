@@ -1,4 +1,6 @@
 #include <stdio.h>
+#define __USE_BSD
+#include <math.h>
 #include <sys/queue.h>
 
 #include <allegro5/allegro.h>
@@ -22,6 +24,7 @@ entity_list *bullet_list_head;
 entity_list *hater_list_head;
 
 int score;
+int level;
 
 void print_version(char* text, int v) {
 
@@ -146,32 +149,68 @@ void spa_render() {
 
     al_clear_to_color(al_map_rgb(10, 10, 20));
 
-    al_draw_bitmap(player->bitmap, player->x, player->y, 0);
+    spa_draw_entity(player);
 
     {
         entity *bullet; 
         for (bullet = bullet_list_head->lh_first; bullet != NULL; 
                 bullet = bullet->entity_p.le_next) {
-
-            al_draw_bitmap(bullet->bitmap, bullet->x, bullet->y, 0);
+            
+            spa_draw_entity(bullet);
         }
     }
     {
         entity *hater;
         for (hater = hater_list_head->lh_first; hater != NULL;
                 hater = hater->entity_p.le_next) {
-
-            al_draw_bitmap(hater->bitmap, hater->x, hater->y, 0);
+    
+            spa_draw_entity(hater);
         }
     }
 }
 
 void spa_osd() {
 
-    al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, ALLEGRO_ALIGN_LEFT,
+    al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 2, ALLEGRO_ALIGN_LEFT,
             "health: %d", player->health);
+    al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 14, ALLEGRO_ALIGN_LEFT,
+            "score: %d", score);
+    al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 26, ALLEGRO_ALIGN_LEFT,
+            "level: %d", level);
+
+
+    if (player->health <= 0) {
+        al_draw_text(font, al_map_rgb(255, 255, 255), SCREEN_W / 2, SCREEN_H / 2,
+                ALLEGRO_ALIGN_CENTER, "you died");
+        al_draw_text(font, al_map_rgb(255, 255, 255), SCREEN_W / 2, SCREEN_H / 2 + 12,
+                ALLEGRO_ALIGN_CENTER, "(press [BACKSPACE] to restart)");
+    }
 
     al_flip_display();
+}
+
+void spa_game_reset() {
+    
+    score = 10;
+
+    {
+        spa_clear_entity_list(hater_list_head);
+        spa_clear_entity_list(bullet_list_head);
+    } /* ... */
+
+    {
+        if (player)
+            free(player);
+
+        player = spa_entity_create(SCREEN_W / 2, SCREEN_H - (SCREEN_H / 4), 0, 0);
+        spa_player_init_entity(player);
+    } /* ... */
+
+    {
+        spa_create_haters(hater_list_head, SCREEN_W, SCREEN_H, 10);
+    } /* ... */
+
+    al_start_timer(timer);
 }
 
 bool spa_loop(bool *redraw) {
@@ -185,7 +224,7 @@ bool spa_loop(bool *redraw) {
     }
     else if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
         return true;
-
+    
     else if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
         switch (ev.keyboard.keycode) {
             case ALLEGRO_KEY_W:
@@ -194,15 +233,26 @@ bool spa_loop(bool *redraw) {
             case ALLEGRO_KEY_S:
                 player->y_vel = PLAYER_VEL;
                 break;
-            case ALLEGRO_KEY_A:
+            case ALLEGRO_KEY_Q:
                 player->x_vel = -PLAYER_VEL;
                 break;
-            case ALLEGRO_KEY_D:
+            case ALLEGRO_KEY_E:
                 player->x_vel = PLAYER_VEL;
                 break;
+            case ALLEGRO_KEY_A:
+                player->angle_vel = -PLAYER_THETA;
+                break;
+            case ALLEGRO_KEY_D:
+                player->angle_vel = PLAYER_THETA;
+                break;
             case ALLEGRO_KEY_SPACE:
-                spa_add_bullet(bullet_list_head, player->x + (player->width / 2),
-                        player->y, player->x_vel, player->y_vel);
+                if (score > 0) {
+                    spa_add_bullet(bullet_list_head, player);
+                    score -= 1;
+                }
+                break;
+            case ALLEGRO_KEY_BACKSPACE:
+                spa_game_reset();
                 break;
         }
     }
@@ -217,13 +267,21 @@ bool spa_loop(bool *redraw) {
                 if (player->y_vel > 0)
                     player->y_vel = 0;
                 break;
-            case ALLEGRO_KEY_A:
+            case ALLEGRO_KEY_Q:
                 if (player->x_vel < 0)
                     player->x_vel = 0;
                 break;
-            case ALLEGRO_KEY_D:
+            case ALLEGRO_KEY_E:
                 if (player->x_vel > 0)
                     player->x_vel = 0;
+                break;
+            case ALLEGRO_KEY_A:
+                if (player->angle_vel < 0)
+                    player->angle_vel = 0;
+                break;
+            case ALLEGRO_KEY_D:
+                if (player->angle_vel > 0)
+                    player->angle_vel = 0;
                 break;
         }
     }
@@ -234,26 +292,11 @@ bool spa_loop(bool *redraw) {
 int main(int argc, char **argv) {
 
     bool redraw = true;
-    score = 0;
 
     {
         if (!spa_init())
             goto cleanup;
     } /* ... */
-
-    {
-        player = spa_entity_create(SCREEN_W / 2, SCREEN_H - (SCREEN_H / 4), 0, 0);
-        if (!player) {
-            fprintf(stderr, "spa_entity_create(): failed\n");
-            goto cleanup;
-        }
-
-        spa_player_init_entity(player);
-    } /* ... */
-
-    {
-        spa_create_haters(hater_list_head, SCREEN_W, SCREEN_H, 10);
-    }
 
     {
         al_register_event_source(event_queue, 
@@ -269,59 +312,83 @@ int main(int argc, char **argv) {
            al_register_event_source(event_queue,
            al_get_mouse_event_source());
            */
-
-        al_start_timer(timer);
     } /* ... */
+
+    spa_game_reset();
 
     {
         entity *bullet;
         entity *hater;
 
         while(!spa_loop(&redraw)) {
-
-            for (bullet = bullet_list_head->lh_first; bullet != NULL; 
-                    bullet = bullet->entity_p.le_next) {
-
-                if (bullet->y + bullet->height < 0) {
-                    LIST_REMOVE(bullet, entity_p);
-                    //spa_entity_destroy(bullet);
-                    fprintf(stderr, "bug: bullet %p not freed!\n", bullet);
-                    continue;
-                }
-
-                if (spa_entity_collide(bullet, player)) {
-                    player->health -= 5;
-                    LIST_REMOVE(bullet, entity_p);
-                    //spa_entity_destroy(bullet);
-                    fprintf(stderr, "bug: bullet %p not freed!\n", bullet);
-                    continue;
-                }
-
-                for (hater = hater_list_head->lh_first; hater != NULL;
-                        hater = hater->entity_p.le_next) {
-
-                    if (spa_entity_collide(bullet, hater)) {
-                        hater->health -= 5;
-                        LIST_REMOVE(bullet, entity_p);
-                        //spa_entity_destroy(bullet);
-                        fprintf(stderr, "bug: bullet %p not freed!\n", bullet);
-
-                        if (hater->health < 0) {
-                            LIST_REMOVE(hater, entity_p);
-                            spa_entity_destroy(hater);
-                        }
-                        break;
-                    }
-                }
+            
+            bullet = bullet_list_head->lh_first;
+            while (bullet != NULL) {
                 
-                if (bullet)
-                    spa_entity_update(bullet, SCREEN_W);
+                {
+                    if (bullet->y + bullet->height < 0) {
+                        bullet = spa_remove_entity(bullet);
+                        goto bullet_loop_end;
+                    }
+                } /* ... */
+                
+                {
+                    if (spa_entity_collide(bullet, player)) {
+
+                        spa_player_damage(player, 5, timer);
+
+                        bullet = spa_remove_entity(bullet);
+                        goto bullet_loop_end;
+                    }
+                } /* ... */
+
+                {
+                    hater = hater_list_head->lh_first;
+                    while (hater != NULL) {
+                        if (spa_entity_collide(bullet, hater)) {
+
+                            score += 10;
+                            hater->health -= 5;
+                            bullet = spa_remove_entity(bullet);
+
+                            if (hater->health <= 0) {
+                                // this isn't used anyway, since we go 
+                                // immediately to the next bullet
+                                hater = spa_remove_entity(hater);
+                            }
+                            
+                            goto bullet_loop_end;
+                        }
+
+                        hater = hater->entity_p.le_next;
+                    }
+                } /* ... */
+
+                spa_entity_update(bullet, SCREEN_W);
+                bullet = bullet->entity_p.le_next;
+
+            bullet_loop_end:
+                continue;
             }
 
-            for (hater = hater_list_head->lh_first; hater != NULL;
-                    hater = hater->entity_p.le_next) {
-                
+            hater = hater_list_head->lh_first;
+            while (hater != NULL) {
+                if (spa_entity_collide(player, hater)) {
+                    score += 5;
+                    spa_player_damage(player, 10, timer);
+                    hater = spa_remove_entity(hater);
+                    continue;
+                }
+
+                spa_hater_update(hater, player, bullet_list_head, level);
                 spa_entity_update(hater, SCREEN_W);
+                hater = hater->entity_p.le_next;
+            }
+
+            if (hater_list_head->lh_first == NULL) {
+                level++;
+                spa_clear_entity_list(bullet_list_head);
+                spa_create_haters(hater_list_head, SCREEN_W, SCREEN_H, 10 + level);
             }
 
             spa_entity_update(player, SCREEN_W);
