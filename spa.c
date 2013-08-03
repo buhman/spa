@@ -69,13 +69,12 @@ bool spa_init() {
         }
     } /* ... */
 
-    /*
-       {
+    {
        if (!al_install_mouse()) {
-       fprintf(stderr, "al_install_mouse(): failed\n");
-       return false;
+		   fprintf(stderr, "al_install_mouse(): failed\n");
+		   return false;
        }
-       } */ /* ... */
+    } /* ... */
 
     {
         if (!al_install_keyboard()) {
@@ -113,24 +112,12 @@ bool spa_init() {
             fprintf(stderr, "al_load_font(): failed\n");
             return false;
         }
-        else {
-            /*
-            print_version("allegro_font", al_get_allegro_font_version());
-            print_version("allegro_ttf", al_get_allegro_ttf_version());
-            */
-        }
     } /* ... */
 
     {
         if (!al_init_primitives_addon()) {
             fprintf(stderr, "al_init_primitives_addon(): failed\n");
             return false;
-        }
-        else {
-            /*
-            print_version("allegro_primitives", 
-                    al_get_allegro_primitives_version());
-            */
         }
     } /* ... */
 
@@ -160,7 +147,7 @@ void spa_render() {
             
             spa_draw_entity(bullet);
         }
-    }
+    } /* ... */
     {
         entity *hater;
         for (hater = hater_list_head->lh_first; hater != NULL;
@@ -168,7 +155,7 @@ void spa_render() {
     
             spa_draw_entity(hater);
         }
-    }
+    } /* ... */
 }
 
 void spa_osd() {
@@ -291,6 +278,10 @@ bool spa_loop(bool *redraw) {
         }
     }
 
+	else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
+		fprintf(stdout, "x: %d y: %d\n", ev.mouse.x, ev.mouse.y);
+	}
+
     return false;
 }
 
@@ -313,10 +304,8 @@ int main(int argc, char **argv) {
         al_register_event_source(event_queue,
                 al_get_keyboard_event_source());
 
-        /*
-           al_register_event_source(event_queue,
-           al_get_mouse_event_source());
-           */
+        al_register_event_source(event_queue,
+				al_get_mouse_event_source());
     } /* ... */
 
     spa_game_reset();
