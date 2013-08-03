@@ -25,6 +25,8 @@ entity_list *hater_list_head;
 
 int score;
 int level;
+int hater_count;
+int bullet_count;
 
 void print_version(char* text, int v) {
 
@@ -177,7 +179,10 @@ void spa_osd() {
             "score: %d", score);
     al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 26, ALLEGRO_ALIGN_LEFT,
             "level: %d", level);
-
+    al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 38, ALLEGRO_ALIGN_LEFT,
+            "bullets: %d", bullet_count);
+    al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 50, ALLEGRO_ALIGN_LEFT,
+            "haters: %d", hater_count);
 
     if (player->health <= 0) {
         al_draw_text(font, al_map_rgb(255, 255, 255), SCREEN_W / 2, SCREEN_H / 2,
@@ -322,6 +327,7 @@ int main(int argc, char **argv) {
 
         while(!spa_loop(&redraw)) {
             
+			bullet_count = 0;
             bullet = bullet_list_head->lh_first;
             while (bullet != NULL) {
                 
@@ -366,11 +372,13 @@ int main(int argc, char **argv) {
 
                 spa_entity_update(bullet, SCREEN_W);
                 bullet = bullet->entity_p.le_next;
+				bullet_count++;
 
             bullet_loop_end:
                 continue;
             }
 
+			hater_count = 0;
             hater = hater_list_head->lh_first;
             while (hater != NULL) {
                 if (spa_entity_collide(player, hater)) {
@@ -383,6 +391,7 @@ int main(int argc, char **argv) {
                 spa_hater_update(hater, player, bullet_list_head, level);
                 spa_entity_update(hater, SCREEN_W);
                 hater = hater->entity_p.le_next;
+				hater_count++;
             }
 
             if (hater_list_head->lh_first == NULL) {
