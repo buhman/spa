@@ -1,5 +1,4 @@
 map:
-    possibly make world toridal?
     or make the world scroll up/down?
     haters drop powerups.
 
@@ -17,9 +16,5 @@ graphics:
     represet more ship types graphically
 
 ai:
-    haters should selectively have following behavior
     haters should not fire all quite at the same time; offset
     different hater behaviors for different ship types.
-
-bugs:
-    multiple shots fired too quickly by haters
