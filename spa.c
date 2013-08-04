@@ -26,7 +26,7 @@ entity_list *hater_list_head;
 poof_list *poof_list_head;
 
 int score;
-int level;
+int level = 10;
 
 int hater_count;
 int bullet_count;
@@ -355,6 +355,7 @@ int main(int argc, char **argv) {
 
                         spa_player_damage(player, 5, timer);
 
+						spa_poof_add(poof_list_head, bullet->x, bullet->y);
                         bullet = spa_remove_entity(bullet);
                         goto bullet_loop_end;
                     }
@@ -367,6 +368,7 @@ int main(int argc, char **argv) {
 
                             score += 10;
                             hater->health -= 5;
+							spa_poof_add(poof_list_head, bullet->x, bullet->y);
                             bullet = spa_remove_entity(bullet);
 
                             if (hater->health <= 0) {
@@ -409,7 +411,7 @@ int main(int argc, char **argv) {
 			poof_count = 0;
 			poof = poof_list_head->lh_first;
 			while (poof != NULL) {
-				if (poof->iteration > 15) {
+				if (poof->iteration > 25) {
 					poof = spa_poof_remove(poof);
 					continue;
 				}
