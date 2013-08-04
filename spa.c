@@ -27,9 +27,17 @@ poof_list *poof_list_head;
 
 int score;
 int level = 1;
+
 int hater_count;
 int bullet_count;
 int poof_count;
+
+double init_time;
+
+double logic_time;
+double event_time;
+double render_time;
+double osd_time;
 
 void print_version(char* text, int v) {
 
@@ -47,7 +55,9 @@ bool spa_init() {
             print_version("allegro", al_get_allegro_version());
         }
     } /* ... */
-
+	
+	init_time = al_get_time();
+	
     {
         timer = al_create_timer(1.0 / FPS);
         if (!timer) {
@@ -139,11 +149,31 @@ bool spa_init() {
 		LIST_INIT(poof_list_head);
 	} /* ... */
 
+    {
+        al_register_event_source(event_queue, 
+                al_get_display_event_source(display));
+
+        al_register_event_source(event_queue,
+                al_get_timer_event_source(timer));
+
+        al_register_event_source(event_queue,
+                al_get_keyboard_event_source());
+
+        al_register_event_source(event_queue,
+				al_get_mouse_event_source());
+    } /* ... */
+
+    spa_game_reset();
+
+	fprintf(stdout, "spa_init() in %fs\n", al_get_time() - init_time);
+	
     return true;
 }
 
 void spa_render() {
 
+	double t = al_get_time();
+	
     al_clear_to_color(al_map_rgb(10, 10, 20));
 
     spa_draw_entity(player);
@@ -172,10 +202,14 @@ void spa_render() {
 			spa_poof_draw(poof);
 		}
 	} /* ... */
+
+	render_time = al_get_time() - t;
 }
 
 void spa_osd() {
 
+	double t = al_get_time();	
+	
     al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 2, ALLEGRO_ALIGN_LEFT,
             "health: %d", player->health);
     al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 14, ALLEGRO_ALIGN_LEFT,
@@ -191,6 +225,15 @@ void spa_osd() {
             "poofs: %d", poof_count);
 
 
+	al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W - 2, 2, ALLEGRO_ALIGN_RIGHT,
+			"event: %.2f", event_time);
+	al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W - 2, 14, ALLEGRO_ALIGN_RIGHT,
+			"logic: %.2f", logic_time);
+	al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W - 2, 26, ALLEGRO_ALIGN_RIGHT,
+			"render: %.2f", render_time);
+	al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W - 2, 38, ALLEGRO_ALIGN_RIGHT,
+			"osd: %.2f", osd_time);
+
     if (player->health <= 0) {
         al_draw_text(font, al_map_rgb(255, 255, 255), SCREEN_W / 2, SCREEN_H / 2,
                 ALLEGRO_ALIGN_CENTER, "you died");
@@ -199,6 +242,8 @@ void spa_osd() {
     }
 
     al_flip_display();
+
+	osd_time = al_get_time() - t;
 }
 
 void spa_game_reset() {
@@ -227,6 +272,8 @@ void spa_game_reset() {
 
 bool spa_loop(bool *redraw) {
 
+	double t = al_get_time();
+	
     ALLEGRO_EVENT ev;
 
     al_wait_for_event(event_queue, &ev);
@@ -303,11 +350,15 @@ bool spa_loop(bool *redraw) {
 		spa_poof_add(poof_list_head, ev.mouse.x, ev.mouse.y);
 	}
 
+	event_time = al_get_time() - t;
+	
     return false;
 }
 
 void spa_logic_update() {
 
+	double t = al_get_time();
+	
 	entity *bullet;
 	entity *hater;
 	poof *poof;
@@ -400,6 +451,8 @@ void spa_logic_update() {
 	}
 
 	spa_entity_update(player, SCREEN_W);
+
+	logic_time = al_get_time() - t;
 }
 
 int main(int argc, char **argv) {
@@ -410,22 +463,6 @@ int main(int argc, char **argv) {
         if (!spa_init())
             goto cleanup;
     } /* ... */
-
-    {
-        al_register_event_source(event_queue, 
-                al_get_display_event_source(display));
-
-        al_register_event_source(event_queue,
-                al_get_timer_event_source(timer));
-
-        al_register_event_source(event_queue,
-                al_get_keyboard_event_source());
-
-        al_register_event_source(event_queue,
-				al_get_mouse_event_source());
-    } /* ... */
-
-    spa_game_reset();
 
     {
         while(!spa_loop(&redraw)) {
@@ -441,6 +478,9 @@ int main(int argc, char **argv) {
 
 cleanup:
     {
+		spa_clear_entity_list(hater_list_head);
+		spa_clear_entity_list(bullet_list_head);
+
         spa_player_destroy();
         spa_bullet_destroy();
         spa_hater_destroy();
