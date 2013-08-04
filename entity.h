@@ -15,6 +15,7 @@ struct entity {
     int height;
     int health;
     int type;
+	int mass;
     int last_update;
     float angle_vel;
     float angle;

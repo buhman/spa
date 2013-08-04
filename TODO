@@ -18,5 +18,4 @@ graphics:
 	draw player mid-warp on both sides of warp rather than jumping
 
 ai:
-    haters should not fire all quite at the same time; offset
     different hater behaviors for different ship types.
