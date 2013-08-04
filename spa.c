@@ -212,7 +212,7 @@ void spa_game_reset() {
     } /* ... */
 
     {
-        spa_create_haters(hater_list_head, SCREEN_W, SCREEN_H, 10);
+        spa_create_haters(hater_list_head, SCREEN_W, SCREEN_H, 10 + level);
     } /* ... */
 
     al_start_timer(timer);
