@@ -22,9 +22,5 @@ ai:
     haters should not fire all quite at the same time; offset
     different hater behaviors for different ship types.
 
-osd:
-    count number of bullets, haters, etc..
-
 bugs:
     multiple shots fired too quickly by haters
-    some haters never seem to fire :S

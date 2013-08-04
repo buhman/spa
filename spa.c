@@ -108,7 +108,7 @@ bool spa_init() {
     {
         al_init_font_addon();
         al_init_ttf_addon();
-        font = al_load_font("DejaVuSansMono.ttf", 12, 0);
+		font = al_load_font("DejaVuSansMono.ttf", 12, 0);
         if (!font) {
             fprintf(stderr, "al_load_font(): failed\n");
             return false;
