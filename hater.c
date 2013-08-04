@@ -94,8 +94,8 @@ void spa_create_haters(entity_list* lh, int screen_width,
  
     for (int i = 0; i < number; i++) {
     
-        entity *hater = spa_entity_create(rand() % screen_width, 
-                rand() % screen_height / 2 + HATER_WIDTH, 0, 0);
+        entity *hater = spa_entity_create(rand() % screen_width + HATER_WIDTH / 2, 
+                rand() % screen_height + HATER_HEIGHT / 2, 0, 0);
         spa_hater_init_entity(hater);
 
         LIST_INSERT_HEAD(lh, hater, entity_p);
