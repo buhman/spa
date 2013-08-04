@@ -298,9 +298,15 @@ bool spa_loop(bool *redraw) {
         }
     }
 
+	/*
 	else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
 		fprintf(stdout, "x: %d y: %d\n", ev.mouse.x, ev.mouse.y);
 		spa_poof_add(poof_list_head, ev.mouse.x, ev.mouse.y);
+	}
+	*/
+
+	else if (ev.type == ALLEGRO_EVENT_MOUSE_AXES) {
+		fprintf(stdout, "x: %d y: %d\n", ev.mouse.x, ev.mouse.y);
 	}
 
     return false;
