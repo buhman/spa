@@ -8,3 +8,4 @@ const int PLAYER_VEL = 2;
 const float PLAYER_THETA = M_PI_4 / 10;
 
 bool spa_init();
+void spa_game_reset();

@@ -27,9 +27,17 @@ poof_list *poof_list_head;
 
 int score;
 int level = 1;
+
 int hater_count;
 int bullet_count;
 int poof_count;
+
+double init_time;
+
+double logic_time;
+double event_time;
+double render_time;
+double osd_time;
 
 void print_version(char* text, int v) {
 
@@ -47,7 +55,9 @@ bool spa_init() {
             print_version("allegro", al_get_allegro_version());
         }
     } /* ... */
-
+	
+	init_time = al_get_time();
+	
     {
         timer = al_create_timer(1.0 / FPS);
         if (!timer) {
@@ -139,11 +149,31 @@ bool spa_init() {
 		LIST_INIT(poof_list_head);
 	} /* ... */
 
+    {
+        al_register_event_source(event_queue, 
+                al_get_display_event_source(display));
+
+        al_register_event_source(event_queue,
+                al_get_timer_event_source(timer));
+
+        al_register_event_source(event_queue,
+                al_get_keyboard_event_source());
+
+        al_register_event_source(event_queue,
+				al_get_mouse_event_source());
+    } /* ... */
+
+    spa_game_reset();
+
+	fprintf(stdout, "spa_init() in %fs\n", al_get_time() - init_time);
+	
     return true;
 }
 
 void spa_render() {
 
+	double t = al_get_time();
+	
     al_clear_to_color(al_map_rgb(10, 10, 20));
 
     spa_draw_entity(player);
@@ -172,10 +202,14 @@ void spa_render() {
 			spa_poof_draw(poof);
 		}
 	} /* ... */
+
+	render_time = al_get_time() - t;
 }
 
 void spa_osd() {
 
+	double t = al_get_time();	
+	
     al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 2, ALLEGRO_ALIGN_LEFT,
             "health: %d", player->health);
     al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 14, ALLEGRO_ALIGN_LEFT,
@@ -191,6 +225,15 @@ void spa_osd() {
             "poofs: %d", poof_count);
 
 
+	al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W - 2, 2, ALLEGRO_ALIGN_RIGHT,
+			"event: %.2f", event_time);
+	al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W - 2, 14, ALLEGRO_ALIGN_RIGHT,
+			"logic: %.2f", logic_time);
+	al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W - 2, 26, ALLEGRO_ALIGN_RIGHT,
+			"render: %.2f", render_time);
+	al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W - 2, 38, ALLEGRO_ALIGN_RIGHT,
+			"osd: %.2f", osd_time);
+
     if (player->health <= 0) {
         al_draw_text(font, al_map_rgb(255, 255, 255), SCREEN_W / 2, SCREEN_H / 2,
                 ALLEGRO_ALIGN_CENTER, "you died");
@@ -199,6 +242,8 @@ void spa_osd() {
     }
 
     al_flip_display();
+
+	osd_time = al_get_time() - t;
 }
 
 void spa_game_reset() {
@@ -227,6 +272,8 @@ void spa_game_reset() {
 
 bool spa_loop(bool *redraw) {
 
+	double t = al_get_time();
+	
     ALLEGRO_EVENT ev;
 
     al_wait_for_event(event_queue, &ev);
@@ -309,7 +356,109 @@ bool spa_loop(bool *redraw) {
 		fprintf(stdout, "x: %d y: %d\n", ev.mouse.x, ev.mouse.y);
 	}
 
+	event_time = al_get_time() - t;
+	
     return false;
+}
+
+void spa_logic_update() {
+
+	double t = al_get_time();
+	
+	entity *bullet;
+	entity *hater;
+	poof *poof;
+
+	bullet_count = 0;
+	bullet = bullet_list_head->lh_first;
+	while (bullet != NULL) {
+		
+		{
+			if (bullet->y + bullet->height < 0 || 
+					bullet->y + bullet->height > SCREEN_H) {
+				bullet = spa_remove_entity(bullet);
+				goto bullet_loop_end;
+			}
+		} /* ... */
+		
+		{
+			if (spa_entity_collide(bullet, player)) {
+
+				spa_player_damage(player, 5, timer);
+
+				spa_poof_add(poof_list_head, bullet->x, bullet->y);
+				bullet = spa_remove_entity(bullet);
+				goto bullet_loop_end;
+			}
+		} /* ... */
+
+		{
+			hater = hater_list_head->lh_first;
+			while (hater != NULL) {
+				if (spa_entity_collide(bullet, hater)) {
+
+					score += 10;
+					hater->health -= 5;
+					spa_poof_add(poof_list_head, bullet->x, bullet->y);
+					bullet = spa_remove_entity(bullet);
+
+					if (hater->health <= 0) {
+						// this isn't used anyway, since we go 
+						// immediately to the next bullet
+						hater = spa_remove_entity(hater);
+					}
+					
+					goto bullet_loop_end;
+				}
+
+				hater = hater->entity_p.le_next;
+			}
+		} /* ... */
+
+		spa_entity_update(bullet, SCREEN_W);
+		bullet = bullet->entity_p.le_next;
+		bullet_count++;
+
+	bullet_loop_end:
+		continue;
+	}
+
+	hater_count = 0;
+	hater = hater_list_head->lh_first;
+	while (hater != NULL) {
+		if (spa_entity_collide(player, hater)) {
+			score += 5;
+			spa_player_damage(player, 10, timer);
+			hater = spa_remove_entity(hater);
+			continue;
+		}
+
+		spa_hater_update(hater, player, bullet_list_head, level);
+		spa_entity_update(hater, SCREEN_W);
+		hater = hater->entity_p.le_next;
+		hater_count++;
+	}
+
+	poof_count = 0;
+	poof = poof_list_head->lh_first;
+	while (poof != NULL) {
+		if (poof->iteration > 25) {
+			poof = spa_poof_remove(poof);
+			continue;
+		}
+		poof = poof->poof_p.le_next;
+		poof_count++;
+	}
+
+	if (hater_list_head->lh_first == NULL) {
+		level++;
+		spa_clear_entity_list(bullet_list_head);
+		spa_create_haters(hater_list_head, SCREEN_W, SCREEN_H, 10 + level);
+	}
+
+	spa_entity_update(player, SCREEN_W);
+
+	logic_time = al_get_time() - t;
 }
 
 int main(int argc, char **argv) {
@@ -322,119 +471,11 @@ int main(int argc, char **argv) {
     } /* ... */
 
     {
-        al_register_event_source(event_queue, 
-                al_get_display_event_source(display));
-
-        al_register_event_source(event_queue,
-                al_get_timer_event_source(timer));
-
-        al_register_event_source(event_queue,
-                al_get_keyboard_event_source());
-
-        al_register_event_source(event_queue,
-				al_get_mouse_event_source());
-    } /* ... */
-
-    spa_game_reset();
-
-    {
-        entity *bullet;
-        entity *hater;
-		poof *poof;
-
         while(!spa_loop(&redraw)) {
             
-			bullet_count = 0;
-            bullet = bullet_list_head->lh_first;
-            while (bullet != NULL) {
-                
-                {
-                    if (bullet->y + bullet->height < 0 || 
-							bullet->y + bullet->height > SCREEN_H) {
-                        bullet = spa_remove_entity(bullet);
-                        goto bullet_loop_end;
-                    }
-                } /* ... */
-                
-                {
-                    if (spa_entity_collide(bullet, player)) {
-
-                        spa_player_damage(player, 5, timer);
-
-						spa_poof_add(poof_list_head, bullet->x, bullet->y);
-                        bullet = spa_remove_entity(bullet);
-                        goto bullet_loop_end;
-                    }
-                } /* ... */
-
-                {
-                    hater = hater_list_head->lh_first;
-                    while (hater != NULL) {
-                        if (spa_entity_collide(bullet, hater)) {
-
-                            score += 10;
-                            hater->health -= 5;
-							spa_poof_add(poof_list_head, bullet->x, bullet->y);
-                            bullet = spa_remove_entity(bullet);
-
-                            if (hater->health <= 0) {
-                                // this isn't used anyway, since we go 
-                                // immediately to the next bullet
-                                hater = spa_remove_entity(hater);
-                            }
-                            
-                            goto bullet_loop_end;
-                        }
-
-                        hater = hater->entity_p.le_next;
-                    }
-                } /* ... */
-
-                spa_entity_update(bullet, SCREEN_W);
-                bullet = bullet->entity_p.le_next;
-				bullet_count++;
-
-            bullet_loop_end:
-                continue;
-            }
-
-			hater_count = 0;
-            hater = hater_list_head->lh_first;
-            while (hater != NULL) {
-                if (spa_entity_collide(player, hater)) {
-                    score += 5;
-                    spa_player_damage(player, 10, timer);
-                    hater = spa_remove_entity(hater);
-                    continue;
-                }
-
-                spa_hater_update(hater, player, bullet_list_head, level);
-                spa_entity_update(hater, SCREEN_W);
-                hater = hater->entity_p.le_next;
-				hater_count++;
-            }
-
-			poof_count = 0;
-			poof = poof_list_head->lh_first;
-			while (poof != NULL) {
-				if (poof->iteration > 25) {
-					poof = spa_poof_remove(poof);
-					continue;
-				}
-				poof = poof->poof_p.le_next;
-				poof_count++;
-			}
-
-            if (hater_list_head->lh_first == NULL) {
-                level++;
-                spa_clear_entity_list(bullet_list_head);
-                spa_create_haters(hater_list_head, SCREEN_W, SCREEN_H, 10 + level);
-            }
-
-            spa_entity_update(player, SCREEN_W);
-
             if (redraw && al_is_event_queue_empty(event_queue)) {
                 redraw = false;
+				spa_logic_update();
                 spa_render();
                 spa_osd();
             }
@@ -443,6 +484,9 @@ int main(int argc, char **argv) {
 
 cleanup:
     {
+		spa_clear_entity_list(hater_list_head);
+		spa_clear_entity_list(bullet_list_head);
+
         spa_player_destroy();
         spa_bullet_destroy();
         spa_hater_destroy();
