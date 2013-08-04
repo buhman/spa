@@ -30,7 +30,7 @@ void spa_entity_init(entity*, ALLEGRO_BITMAP*);
 
 void spa_entity_destroy(entity*);
 
-void spa_entity_update(entity*, int);
+void spa_entity_update(entity*, int, int);
 
 bool spa_entity_collide(entity*, entity*);
 

@@ -26,7 +26,7 @@ entity_list *hater_list_head;
 poof_list *poof_list_head;
 
 int score;
-int level = 1;
+int level = 10;
 int hater_count;
 int bullet_count;
 int poof_count;
@@ -343,13 +343,6 @@ int main(int argc, char **argv) {
             while (bullet != NULL) {
                 
                 {
-                    if (bullet->y + bullet->height < 0) {
-                        bullet = spa_remove_entity(bullet);
-                        goto bullet_loop_end;
-                    }
-                } /* ... */
-                
-                {
                     if (spa_entity_collide(bullet, player)) {
 
                         spa_player_damage(player, 5, timer);
@@ -383,7 +376,7 @@ int main(int argc, char **argv) {
                     }
                 } /* ... */
 
-                spa_entity_update(bullet, SCREEN_W);
+                spa_entity_update(bullet, SCREEN_W, SCREEN_H);
                 bullet = bullet->entity_p.le_next;
 				bullet_count++;
 
@@ -402,7 +395,7 @@ int main(int argc, char **argv) {
                 }
 
                 spa_hater_update(hater, player, bullet_list_head, level);
-                spa_entity_update(hater, SCREEN_W);
+                spa_entity_update(hater, SCREEN_W, SCREEN_H);
                 hater = hater->entity_p.le_next;
 				hater_count++;
             }
@@ -424,7 +417,7 @@ int main(int argc, char **argv) {
                 spa_create_haters(hater_list_head, SCREEN_W, SCREEN_H, 10 + level);
             }
 
-            spa_entity_update(player, SCREEN_W);
+            spa_entity_update(player, SCREEN_W, SCREEN_H);
 
             if (redraw && al_is_event_queue_empty(event_queue)) {
                 redraw = false;

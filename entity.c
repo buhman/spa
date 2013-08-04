@@ -53,7 +53,7 @@ void spa_entity_destroy(entity *e) {
         free(e);
 }
 
-void spa_entity_update(entity *e, int screen_width) {
+void spa_entity_update(entity *e, int screen_width, int screen_height) {
 
     e->angle += e->angle_vel;
     e->x += e->y_vel * cos(e->angle + M_PI_2);
@@ -65,6 +65,10 @@ void spa_entity_update(entity *e, int screen_width) {
         e->x = screen_width - e->width;
     else if (e->x + e->width + e->x_vel > screen_width)
         e->x = 0;
+	if (e->y + e->y_vel < 0)
+		e->y = screen_height - e->height;
+	else if (e->y + e->height + e->y_vel > screen_height)
+		e->y = 0 + e->height;
 }
 
 bool spa_entity_collide(entity *e1, entity *e2) {
