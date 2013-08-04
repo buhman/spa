@@ -26,7 +26,7 @@ entity_list *hater_list_head;
 poof_list *poof_list_head;
 
 int score;
-int level = 1;
+int level = 0;
 int hater_count;
 int bullet_count;
 int poof_count;
@@ -343,7 +343,8 @@ int main(int argc, char **argv) {
             while (bullet != NULL) {
                 
                 {
-                    if (bullet->y + bullet->height < 0) {
+                    if (bullet->y + bullet->height < 0 || 
+							bullet->y + bullet->height > SCREEN_H) {
                         bullet = spa_remove_entity(bullet);
                         goto bullet_loop_end;
                     }
