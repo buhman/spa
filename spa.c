@@ -13,6 +13,7 @@
 #include "player.h"
 #include "bullet.h"
 #include "hater.h"
+#include "poof.h"
 
 ALLEGRO_DISPLAY *display;
 ALLEGRO_EVENT_QUEUE *event_queue;
@@ -22,11 +23,14 @@ ALLEGRO_FONT *font;
 entity *player;
 entity_list *bullet_list_head;
 entity_list *hater_list_head;
+poof_list *poof_list_head;
 
 int score;
 int level;
+
 int hater_count;
 int bullet_count;
+int poof_count;
 
 void print_version(char* text, int v) {
 
@@ -69,13 +73,12 @@ bool spa_init() {
         }
     } /* ... */
 
-    /*
-       {
+    {
        if (!al_install_mouse()) {
-       fprintf(stderr, "al_install_mouse(): failed\n");
-       return false;
+		   fprintf(stderr, "al_install_mouse(): failed\n");
+		   return false;
        }
-       } */ /* ... */
+    } /* ... */
 
     {
         if (!al_install_keyboard()) {
@@ -113,24 +116,12 @@ bool spa_init() {
             fprintf(stderr, "al_load_font(): failed\n");
             return false;
         }
-        else {
-            /*
-            print_version("allegro_font", al_get_allegro_font_version());
-            print_version("allegro_ttf", al_get_allegro_ttf_version());
-            */
-        }
     } /* ... */
 
     {
         if (!al_init_primitives_addon()) {
             fprintf(stderr, "al_init_primitives_addon(): failed\n");
             return false;
-        }
-        else {
-            /*
-            print_version("allegro_primitives", 
-                    al_get_allegro_primitives_version());
-            */
         }
     } /* ... */
 
@@ -143,6 +134,11 @@ bool spa_init() {
         hater_list_head = malloc(sizeof(entity_list));
         LIST_INIT(hater_list_head);
     } /* ... */
+
+	{
+		poof_list_head = malloc(sizeof(poof_list));
+		LIST_INIT(poof_list_head);
+	} /* ... */
 
     return true;
 }
@@ -160,7 +156,7 @@ void spa_render() {
             
             spa_draw_entity(bullet);
         }
-    }
+    } /* ... */
     {
         entity *hater;
         for (hater = hater_list_head->lh_first; hater != NULL;
@@ -168,7 +164,15 @@ void spa_render() {
     
             spa_draw_entity(hater);
         }
-    }
+    } /* ... */
+	{
+		poof *poof;
+		for (poof = poof_list_head->lh_first; poof != NULL;
+				poof = poof->poof_p.le_next) {
+
+			spa_poof_draw(poof);
+		}
+	} /* ... */
 }
 
 void spa_osd() {
@@ -179,10 +183,14 @@ void spa_osd() {
             "score: %d", score);
     al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 26, ALLEGRO_ALIGN_LEFT,
             "level: %d", level);
+
     al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 38, ALLEGRO_ALIGN_LEFT,
             "bullets: %d", bullet_count);
     al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 50, ALLEGRO_ALIGN_LEFT,
             "haters: %d", hater_count);
+	al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 62, ALLEGRO_ALIGN_LEFT,
+            "poofs: %d", poof_count);
+
 
     if (player->health <= 0) {
         al_draw_text(font, al_map_rgb(255, 255, 255), SCREEN_W / 2, SCREEN_H / 2,
@@ -291,6 +299,11 @@ bool spa_loop(bool *redraw) {
         }
     }
 
+	else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
+		fprintf(stdout, "x: %d y: %d\n", ev.mouse.x, ev.mouse.y);
+		spa_poof_add(poof_list_head, ev.mouse.x, ev.mouse.y);
+	}
+
     return false;
 }
 
@@ -313,10 +326,8 @@ int main(int argc, char **argv) {
         al_register_event_source(event_queue,
                 al_get_keyboard_event_source());
 
-        /*
-           al_register_event_source(event_queue,
-           al_get_mouse_event_source());
-           */
+        al_register_event_source(event_queue,
+				al_get_mouse_event_source());
     } /* ... */
 
     spa_game_reset();
@@ -324,6 +335,7 @@ int main(int argc, char **argv) {
     {
         entity *bullet;
         entity *hater;
+		poof *poof;
 
         while(!spa_loop(&redraw)) {
             
@@ -343,6 +355,7 @@ int main(int argc, char **argv) {
 
                         spa_player_damage(player, 5, timer);
 
+						spa_poof_add(poof_list_head, bullet->x, bullet->y);
                         bullet = spa_remove_entity(bullet);
                         goto bullet_loop_end;
                     }
@@ -355,6 +368,7 @@ int main(int argc, char **argv) {
 
                             score += 10;
                             hater->health -= 5;
+							spa_poof_add(poof_list_head, bullet->x, bullet->y);
                             bullet = spa_remove_entity(bullet);
 
                             if (hater->health <= 0) {
@@ -393,6 +407,17 @@ int main(int argc, char **argv) {
                 hater = hater->entity_p.le_next;
 				hater_count++;
             }
+
+			poof_count = 0;
+			poof = poof_list_head->lh_first;
+			while (poof != NULL) {
+				if (poof->iteration > 25) {
+					poof = spa_poof_remove(poof);
+					continue;
+				}
+				poof = poof->poof_p.le_next;
+				poof_count++;
+			}
 
             if (hater_list_head->lh_first == NULL) {
                 level++;

@@ -13,7 +13,6 @@ leveling:
     make ai spawn area either the entire "map" or north of "map", rather than in player view
 
 graphics:
-    develop explosion animation using pixels
     a parallaxing 'star' background
     represet more ship types graphically
 
