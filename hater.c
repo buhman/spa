@@ -81,7 +81,7 @@ void spa_hater_update(entity* hater, entity* player, entity_list *lh, int level)
 
     {
         int r = rand() % 255;
-		if (r > 255 - (level * 1.1)) {
+		if (r < 255 - (level * 1.1)) {
 		
 			spa_add_bullet(lh, hater);
 		}
