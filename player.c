@@ -44,7 +44,7 @@ void spa_player_init_entity(entity *e) {
     
     spa_entity_init(e, player_bitmap);
 
-    e->health = 100;
+    e->health = 100000;
 }
 
 void spa_player_destroy() {

@@ -39,11 +39,13 @@ poof* spa_poof_remove(poof* p) {
 
 void spa_poof_draw(poof* p) {
 
+	float offset = (rand() % 628) / 1000;
+	
 	for (int i=0; i < 10; i++) {
 
 		float theta = interval * i;
-		float x = p->iteration * cos(theta) + p->x;
-		float y = p->iteration * sin(theta) + p->y;
+		float x = p->iteration * cos(theta + offset) + p->x;
+		float y = p->iteration * sin(theta + offset) + p->y;
 		al_draw_pixel(x, y, al_map_rgb(255, 0, 0));
 	}
 	

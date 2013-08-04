@@ -26,7 +26,7 @@ entity_list *hater_list_head;
 poof_list *poof_list_head;
 
 int score;
-int level = 1;
+int level = 42;
 
 int hater_count;
 int bullet_count;
@@ -183,7 +183,8 @@ void spa_render() {
         for (bullet = bullet_list_head->lh_first; bullet != NULL; 
                 bullet = bullet->entity_p.le_next) {
             
-            spa_draw_entity(bullet);
+			al_draw_pixel(bullet->x, bullet->y, al_map_rgb(255, 255, 0));
+            //spa_draw_entity(bullet);
         }
     } /* ... */
     {
@@ -436,7 +437,7 @@ void spa_logic_update() {
 	poof_count = 0;
 	poof = poof_list_head->lh_first;
 	while (poof != NULL) {
-		if (poof->iteration > 25) {
+		if (poof->iteration > 250) {
 			poof = spa_poof_remove(poof);
 			continue;
 		}
