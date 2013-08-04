@@ -85,8 +85,15 @@ void spa_hater_update(entity* hater, entity* player, entity_list *lh, int level)
 		
 			spa_add_bullet(lh, hater);
 		}
-
     } /* ... */
+
+	{
+		int r = rand() % 1000;
+		if (r > 1000 - (level * 1.1) && hater->y_vel == 0) {
+
+			hater->y_vel = -3;
+		}
+	}
 }
 
 void spa_create_haters(entity_list* lh, int screen_width, 
