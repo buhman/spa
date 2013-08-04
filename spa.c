@@ -26,8 +26,7 @@ entity_list *hater_list_head;
 poof_list *poof_list_head;
 
 int score;
-int level;
-
+int level = 1;
 int hater_count;
 int bullet_count;
 int poof_count;

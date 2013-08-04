@@ -80,13 +80,12 @@ void spa_hater_update(entity* hater, entity* player, entity_list *lh, int level)
     } /* ... */
 
     {
-        float delay = 10.f / level;
-        if (al_get_time() - hater->last_update > delay) {
-            
-            spa_add_bullet(lh, hater);
+        int r = rand() % 255;
+		if (r > 255 - (level * 1.1)) {
+		
+			spa_add_bullet(lh, hater);
+		}
 
-            hater->last_update = al_get_time();
-        }
     } /* ... */
 }
 
@@ -95,8 +94,8 @@ void spa_create_haters(entity_list* lh, int screen_width,
  
     for (int i = 0; i < number; i++) {
     
-        entity *hater = spa_entity_create(rand() % screen_width, 
-                rand() % screen_height / 2 + HATER_WIDTH, 0, 0);
+        entity *hater = spa_entity_create(rand() % screen_width + HATER_WIDTH / 2, 
+                rand() % screen_height + HATER_HEIGHT / 2, 0, 0);
         spa_hater_init_entity(hater);
 
         LIST_INSERT_HEAD(lh, hater, entity_p);
