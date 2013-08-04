@@ -24,7 +24,7 @@ entity_list *bullet_list_head;
 entity_list *hater_list_head;
 
 int score;
-int level;
+int level = 1;
 int hater_count;
 int bullet_count;
 

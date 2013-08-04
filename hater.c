@@ -80,13 +80,12 @@ void spa_hater_update(entity* hater, entity* player, entity_list *lh, int level)
     } /* ... */
 
     {
-        float delay = 10.f / level;
-        if (al_get_time() - hater->last_update > delay) {
-            
-            spa_add_bullet(lh, hater);
+        int r = rand() % 255;
+		if (r > 255 - (level * 1.1)) {
+		
+			spa_add_bullet(lh, hater);
+		}
 
-            hater->last_update = al_get_time();
-        }
     } /* ... */
 }
 
