@@ -52,6 +52,7 @@ void spa_add_bullet(entity_list *lh, entity *e) {
 
     entity *bullet = spa_entity_create(x, y, e->x_vel, e->y_vel, e->theta);
     spa_bullet_init_entity(bullet);
+	bullet->theta = e->theta;
 
     LIST_INSERT_HEAD(lh, bullet, entity_p);
 }
