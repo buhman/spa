@@ -299,10 +299,10 @@ bool spa_loop(bool *redraw) {
                 player->x_accel = 0.1;
                 break;
             case ALLEGRO_KEY_A:
-                player->theta_accel = -0.1;
+                player->theta_accel = -0.0078;
                 break;
             case ALLEGRO_KEY_D:
-                player->theta_accel = 0.00785398163;
+                player->theta_accel = 0.0078;
                 break;
             case ALLEGRO_KEY_SPACE:
                 if (score > 0) {
