@@ -159,8 +159,8 @@ bool spa_init() {
         al_register_event_source(event_queue,
                 al_get_keyboard_event_source());
 
-        al_register_event_source(event_queue,
-				al_get_mouse_event_source());
+        //al_register_event_source(event_queue,
+		//		al_get_mouse_event_source());
     } /* ... */
 
     spa_game_reset();
@@ -226,22 +226,22 @@ void spa_osd() {
 
 
 	al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W - 2, 2, ALLEGRO_ALIGN_RIGHT,
-			"event: %.2f", event_time);
+			"event: %.2fs", event_time);
 	al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W - 2, 14, ALLEGRO_ALIGN_RIGHT,
-			"logic: %.2f", logic_time);
+			"logic: %.2fs", logic_time);
 	al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W - 2, 26, ALLEGRO_ALIGN_RIGHT,
-			"render: %.2f", render_time);
+			"render: %.2fs", render_time);
 	al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W - 2, 38, ALLEGRO_ALIGN_RIGHT,
-			"osd: %.2f", osd_time);
+			"osd: %.2fs", osd_time);
 
 	al_draw_textf(font, al_map_rgb(255, 255, 255), 2, SCREEN_H - 14, ALLEGRO_ALIGN_LEFT,
-			"p->theta: %.2f ; p->theta_vel: %.2f ; p->theta_accel: %.2f", 
+			"p->t: %.2f ; p->t_v: %.2f ; p->t_a: %.2f", 
 			player->theta, player->theta_vel, player->theta_accel);
 	al_draw_textf(font, al_map_rgb(255, 255, 255), 2, SCREEN_H - 26, ALLEGRO_ALIGN_LEFT,
-			"p->y: %.2f ; p->y_vel: %.2f ; p->y_accel: %.2f", 
+			"p->y: %.2f ; p->y_v: %.2f ; p->y_a: %.2f", 
 			player->y, player->y_vel, player->y_accel);
 	al_draw_textf(font, al_map_rgb(255, 255, 255), 2, SCREEN_H - 38, ALLEGRO_ALIGN_LEFT,
-			"p->x: %.2f ; p->x_vel: %.2f ; p->x_accel: %.2f", 
+			"p->x: %.2f ; p->x_v: %.2f ; p->x_a: %.2f", 
 			player->x, player->x_vel, player->x_accel);
 
 
