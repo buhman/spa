@@ -24,18 +24,25 @@ entity* spa_entity_create(float x, float y, float x_vel, float y_vel, float thet
     {
         e->x = x;
         e->y = y;
+        e->theta = theta;
+
         e->x_vel = x_vel;
         e->y_vel = y_vel;
-        e->theta = theta;
+		e->theta_vel = 0;
+
+		e->x_accel = 0;
+		e->y_accel = 0;
+		e->theta_accel = 0;
 
         e->width = 0;
         e->height = 0;
+
         e->health = 1;
 		e->mass= 1;
+
         e->type = 0;
-		e->theta = 0;
-        e->theta_vel = 0;
 		e->last_update = 0;
+
         e->bitmap = NULL;
     } /* ... */
 
