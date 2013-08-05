@@ -61,6 +61,7 @@ void spa_hater_init_entity(entity* hater) {
     spa_entity_init(hater, hater_bitmap);
 
     hater->type = rand();
+	hater->mass = 3;
 }
 
 void spa_hater_destroy() {

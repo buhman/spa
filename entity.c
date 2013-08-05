@@ -106,15 +106,15 @@ void spa_entity_update(entity *e, int screen_width) {
 
 bool spa_entity_collide(entity *e1, entity *e2) {
     
-    int e1_x2 = fmax(e1->x, e1->x + e1->x_vel) + e1->width / 2;
-    int e1_x1 = fmin(e1->x, e1->x + e1->x_vel) - e1->width / 2;
-    int e1_y2 = fmax(e1->y, e1->y + e1->y_vel) + e1->height / 2;
-    int e1_y1 = fmin(e1->y, e1->y + e1->y_vel) - e1->width / 2;
+    int e1_x2 = e1->x + e1->width / 2;
+    int e1_x1 = e1->x - e1->width / 2;
+    int e1_y2 = e1->y + e1->height / 2;
+    int e1_y1 = e1->y - e1->width / 2;
 
-    int e2_x2 = fmax(e2->x, e2->x + e2->x_vel) + e2->width / 2;
-    int e2_x1 = fmin(e2->x, e2->x + e2->x_vel) - e2->width / 2;
-    int e2_y2 = fmax(e2->y, e2->y + e2->y_vel) + e2->height / 2;
-    int e2_y1 = fmin(e2->y, e2->y + e2->y_vel) - e2->width / 2;
+    int e2_x2 = e2->x + e2->width / 2;
+    int e2_x1 = e2->x - e2->width / 2;
+    int e2_y2 = e2->y + e2->height / 2;
+    int e2_y1 = e2->y - e2->width / 2;
 
     if ((e1_x1 > e2_x2) ||
             (e1_y1 > e2_y2) ||
@@ -123,6 +123,8 @@ bool spa_entity_collide(entity *e1, entity *e2) {
         return false;
     return true;
 }
+
+void spa_entity_
 
 void spa_draw_entity(entity *e) {
 
