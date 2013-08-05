@@ -82,7 +82,7 @@ void spa_entity_attenuate(entity *e) {
 void spa_entity_update(entity *e, int screen_width) {	
 
     if (e->x_vel + e->x_accel < TERMINAL_VELOCITY && 
-            e->y_vel + e->y_accel > -TERMINAL_VELOCITY)
+            e->x_vel + e->x_accel > -TERMINAL_VELOCITY)
         e->x_vel += e->x_accel;
     if (e->y_vel + e->y_accel < TERMINAL_VELOCITY && 
             e->y_vel + e->y_accel > -TERMINAL_VELOCITY)
