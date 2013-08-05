@@ -124,8 +124,6 @@ bool spa_entity_collide(entity *e1, entity *e2) {
     return true;
 }
 
-void spa_entity_
-
 void spa_draw_entity(entity *e) {
 
     al_draw_rotated_bitmap(e->bitmap,
