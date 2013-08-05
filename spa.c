@@ -440,6 +440,9 @@ void spa_logic_update() {
 
 			hater->health -= 10;
 
+			if (hater->health < 0)
+				spa_hater_dead(hater);
+
 			//hater = spa_remove_entity(hater);
 			//continue;
 		}

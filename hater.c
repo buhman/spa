@@ -80,6 +80,12 @@ void spa_hater_init_entity(entity* hater) {
 	hater->mass = 3;
 }
 
+void spa_hater_dead(entity* hater) {
+	
+	hater->bitmap = hater_dead_bitmap;
+	hater->last_update = al_get_time();
+}
+
 void spa_hater_destroy() {
     if (hater_bitmap)
         al_destroy_bitmap(hater_bitmap);
