@@ -44,10 +44,21 @@ void spa_player_init_entity(entity *e) {
     
     spa_entity_init(e, player_bitmap);
 
+	e->mass = 5;
     e->health = 100;
 }
 
 void spa_player_destroy() {
     if (player_bitmap)
         al_destroy_bitmap(player_bitmap);
+}
+
+void spa_player_damage(entity* player, int damage, ALLEGRO_TIMER *timer) {
+
+    if (player->health - damage <= 0) {
+        player->health = 0;
+        al_stop_timer(timer);
+    }
+    else
+        player->health -= damage;
 }

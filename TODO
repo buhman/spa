@@ -1,0 +1,21 @@
+map:
+    or make the world scroll up/down?
+    haters drop powerups.
+
+movement/physics:
+    fix acceleration branch stuff?
+    make rotation slightly slower?
+    give objects mass and make them bounce on collision.
+
+leveling:
+    temporary invulnerability on level-up?
+    make ai spawn area north of "map", rather than in player view
+
+graphics:
+    a parallaxing 'star' background
+    represet more ship types graphically
+	make bullet drawing simpler
+	draw player mid-warp on both sides of warp rather than jumping
+
+ai:
+    different hater behaviors for different ship types.

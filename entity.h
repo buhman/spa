@@ -20,6 +20,8 @@ struct entity {
     float theta;
     float theta_vel;
     float theta_accel;
+	int mass;
+    int last_update;
     ALLEGRO_BITMAP *bitmap;
 	LIST_ENTRY(entity) entity_p;
 };
@@ -39,3 +41,5 @@ bool spa_entity_collide(entity*, entity*);
 void spa_draw_entity(entity*);
 
 entity* spa_remove_entity(entity*);
+
+void spa_clear_entity_list(entity_list*);
