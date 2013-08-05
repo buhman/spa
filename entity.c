@@ -69,13 +69,13 @@ void spa_entity_destroy(entity *e) {
 void spa_entity_attenuate(entity *e) {
 
 	if (e->x_accel == 0 && e->x_vel != 0) {
-		e->x_vel *= 0.95;
+		e->x_vel *= 0.96;
 	}
 	if (e->y_accel == 0 && e->y_vel != 0) {
-		e->y_vel *= 0.95;
+		e->y_vel *= 0.96;
 	}
 	if (e->theta_accel == 0 && e->theta_vel != 0) {
-		e->theta_vel *= 0.95;
+		e->theta_vel *= 0.96;
 	}
 }
 
