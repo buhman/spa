@@ -3,8 +3,6 @@ map:
     haters drop powerups.
 
 movement/physics:
-    fix acceleration branch stuff?
-    make rotation slightly slower?
     give objects mass and make them bounce on collision.
 
 leveling:
