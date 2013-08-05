@@ -59,7 +59,20 @@ void spa_entity_destroy(entity *e) {
         free(e);
 }
 
-void spa_entity_update(entity *e, int screen_width) {
+void spa_entity_attenuate(entity *e) {
+
+	if (e->x_accel == 0 && e->x_vel != 0) {
+		e->x_vel *= 0.95;
+	}
+	if (e->y_accel == 0 && e->y_vel != 0) {
+		e->y_vel *= 0.95;
+	}
+	if (e->theta_accel == 0 && e->theta_vel != 0) {
+		e->theta_vel *= 0.95;
+	}
+}
+
+void spa_entity_update(entity *e, int screen_width) {	
 
     if (e->x_vel + e->x_accel < TERMINAL_VELOCITY && 
             e->y_vel + e->y_accel > -TERMINAL_VELOCITY)
