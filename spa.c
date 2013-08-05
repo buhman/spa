@@ -26,7 +26,7 @@ entity_list *hater_list_head;
 poof_list *poof_list_head;
 
 int score;
-int level = 42;
+int level = 100;
 
 int hater_count;
 int bullet_count;
@@ -271,7 +271,7 @@ void spa_game_reset() {
         if (player)
             free(player);
 
-        player = spa_entity_create(SCREEN_W / 2, SCREEN_H - (SCREEN_H / 4), 0, 0, 0);
+        player = spa_entity_create(SCREEN_W / 2, SCREEN_H / 2, 0, 0, 0);
         spa_player_init_entity(player);
     } /* ... */
 
