@@ -47,12 +47,12 @@ void spa_bullet_destroy() {
 
 void spa_add_bullet(entity_list *lh, entity *e) {
  
-    int x = e->x + ((BULLET_HEIGHT + e->width) * cos(e->angle - M_PI_2) / R);
-    int y = e->y + ((BULLET_HEIGHT + e->height) * sin(e->angle - M_PI_2) / R);
+    int x = e->x + ((BULLET_HEIGHT + e->width) * cos(e->theta - M_PI_2) / R);
+    int y = e->y + ((BULLET_HEIGHT + e->height) * sin(e->theta - M_PI_2) / R);
 
-    entity *bullet = spa_entity_create(x, y, e->x_vel, e->y_vel);
+    entity *bullet = spa_entity_create(x, y, e->x_vel, e->y_vel, e->theta);
     spa_bullet_init_entity(bullet);
-    bullet->angle = e->angle;
+	bullet->theta = e->theta;
 
     LIST_INSERT_HEAD(lh, bullet, entity_p);
 }

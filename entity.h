@@ -11,20 +11,24 @@ struct entity {
     float y;
     float x_vel;
     float y_vel;
+    float x_accel;
+    float y_accel;
     int width;
     int height;
     int health;
     int type;
+    float theta;
+    float theta_vel;
+    float theta_accel;
+	int mass;
     int last_update;
-    float angle_vel;
-    float angle;
     ALLEGRO_BITMAP *bitmap;
 	LIST_ENTRY(entity) entity_p;
 };
 
 LIST_HEAD(entity_list, entity);
 
-entity* spa_entity_create(int, int, int, int);
+entity* spa_entity_create(float, float, float, float, float);
 
 void spa_entity_init(entity*, ALLEGRO_BITMAP*);
 
@@ -39,3 +43,5 @@ void spa_draw_entity(entity*);
 entity* spa_remove_entity(entity*);
 
 void spa_clear_entity_list(entity_list*);
+
+void spa_entity_attenuate(entity*);

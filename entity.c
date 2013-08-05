@@ -6,7 +6,10 @@
 
 #include "entity.h"
 
-entity* spa_entity_create(int x, int y, int x_vel, int y_vel) {
+const int TERMINAL_VELOCITY = 2;
+const float TERMINAL_THETA_VEL = M_PI_4 / 10;
+
+entity* spa_entity_create(float x, float y, float x_vel, float y_vel, float theta) {
 
     entity *e = NULL;
 
@@ -21,15 +24,25 @@ entity* spa_entity_create(int x, int y, int x_vel, int y_vel) {
     {
         e->x = x;
         e->y = y;
+        e->theta = theta;
+
         e->x_vel = x_vel;
         e->y_vel = y_vel;
+		e->theta_vel = 0;
+
+		e->x_accel = 0;
+		e->y_accel = 0;
+		e->theta_accel = 0;
+
         e->width = 0;
         e->height = 0;
+
         e->health = 1;
+		e->mass= 1;
+
         e->type = 0;
-        e->angle = 0;
-        e->angle_vel = 0;
 		e->last_update = 0;
+
         e->bitmap = NULL;
     } /* ... */
 
@@ -53,13 +66,37 @@ void spa_entity_destroy(entity *e) {
         free(e);
 }
 
-void spa_entity_update(entity *e, int screen_width) {
+void spa_entity_attenuate(entity *e) {
 
-    e->angle += e->angle_vel;
-    e->x += e->y_vel * cos(e->angle + M_PI_2);
-    e->y += e->y_vel * sin(e->angle + M_PI_2);
-    e->x += e->x_vel * cos(e->angle);
-    e->y += e->x_vel * sin(e->angle);
+	if (e->x_accel == 0 && e->x_vel != 0) {
+		e->x_vel *= 0.96;
+	}
+	if (e->y_accel == 0 && e->y_vel != 0) {
+		e->y_vel *= 0.96;
+	}
+	if (e->theta_accel == 0 && e->theta_vel != 0) {
+		e->theta_vel *= 0.96;
+	}
+}
+
+void spa_entity_update(entity *e, int screen_width) {	
+
+    if (e->x_vel + e->x_accel < TERMINAL_VELOCITY && 
+            e->x_vel + e->x_accel > -TERMINAL_VELOCITY)
+        e->x_vel += e->x_accel;
+    if (e->y_vel + e->y_accel < TERMINAL_VELOCITY && 
+            e->y_vel + e->y_accel > -TERMINAL_VELOCITY)
+        e->y_vel += e->y_accel;
+
+    if (e->theta_vel + e->theta_accel < TERMINAL_THETA_VEL && 
+            e->theta_vel + e->theta_accel > -TERMINAL_THETA_VEL)
+        e->theta_vel += e->theta_accel;
+
+    e->theta += e->theta_vel;
+    e->x += e->y_vel * cos(e->theta + M_PI_2);
+    e->y += e->y_vel * sin(e->theta + M_PI_2);
+    e->x += e->x_vel * cos(e->theta);
+    e->y += e->x_vel * sin(e->theta);
 
     if (e->x + e->x_vel < 0)
         e->x = screen_width - e->width;
@@ -69,15 +106,15 @@ void spa_entity_update(entity *e, int screen_width) {
 
 bool spa_entity_collide(entity *e1, entity *e2) {
     
-    int e1_x2 = fmax(e1->x, e1->x + e1->x_vel) + e1->width / 2;
-    int e1_x1 = fmin(e1->x, e1->x + e1->x_vel) - e1->width / 2;
-    int e1_y2 = fmax(e1->y, e1->y + e1->y_vel) + e1->height / 2;
-    int e1_y1 = fmin(e1->y, e1->y + e1->y_vel) - e1->width / 2;
+    int e1_x2 = e1->x + e1->width / 2;
+    int e1_x1 = e1->x - e1->width / 2;
+    int e1_y2 = e1->y + e1->height / 2;
+    int e1_y1 = e1->y - e1->width / 2;
 
-    int e2_x2 = fmax(e2->x, e2->x + e2->x_vel) + e2->width / 2;
-    int e2_x1 = fmin(e2->x, e2->x + e2->x_vel) - e2->width / 2;
-    int e2_y2 = fmax(e2->y, e2->y + e2->y_vel) + e2->height / 2;
-    int e2_y1 = fmin(e2->y, e2->y + e2->y_vel) - e2->width / 2;
+    int e2_x2 = e2->x + e2->width / 2;
+    int e2_x1 = e2->x - e2->width / 2;
+    int e2_y2 = e2->y + e2->height / 2;
+    int e2_y1 = e2->y - e2->width / 2;
 
     if ((e1_x1 > e2_x2) ||
             (e1_y1 > e2_y2) ||
@@ -93,7 +130,7 @@ void spa_draw_entity(entity *e) {
             e->width / 2,
             e->height / 2,
             e->x, e->y,
-            e->angle, 0);
+            e->theta, 0);
 
     int e_x2 = fmax(e->x, e->x + e->x_vel) + e->width / 2;
     int e_x1 = fmin(e->x, e->x + e->x_vel) - e->width / 2;

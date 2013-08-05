@@ -159,8 +159,8 @@ bool spa_init() {
         al_register_event_source(event_queue,
                 al_get_keyboard_event_source());
 
-        al_register_event_source(event_queue,
-				al_get_mouse_event_source());
+        //al_register_event_source(event_queue,
+		//		al_get_mouse_event_source());
     } /* ... */
 
     spa_game_reset();
@@ -227,13 +227,24 @@ void spa_osd() {
 
 
 	al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W - 2, 2, ALLEGRO_ALIGN_RIGHT,
-			"event: %.2f", event_time);
+			"event: %.2fs", event_time);
 	al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W - 2, 14, ALLEGRO_ALIGN_RIGHT,
-			"logic: %.2f", logic_time);
+			"logic: %.2fs", logic_time);
 	al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W - 2, 26, ALLEGRO_ALIGN_RIGHT,
-			"render: %.2f", render_time);
+			"render: %.2fs", render_time);
 	al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W - 2, 38, ALLEGRO_ALIGN_RIGHT,
-			"osd: %.2f", osd_time);
+			"osd: %.2fs", osd_time);
+
+	al_draw_textf(font, al_map_rgb(255, 255, 255), 2, SCREEN_H - 14, ALLEGRO_ALIGN_LEFT,
+			"p->t: %.2f ; p->t_v: %.2f ; p->t_a: %.2f", 
+			player->theta, player->theta_vel, player->theta_accel);
+	al_draw_textf(font, al_map_rgb(255, 255, 255), 2, SCREEN_H - 26, ALLEGRO_ALIGN_LEFT,
+			"p->y: %.2f ; p->y_v: %.2f ; p->y_a: %.2f", 
+			player->y, player->y_vel, player->y_accel);
+	al_draw_textf(font, al_map_rgb(255, 255, 255), 2, SCREEN_H - 38, ALLEGRO_ALIGN_LEFT,
+			"p->x: %.2f ; p->x_v: %.2f ; p->x_a: %.2f", 
+			player->x, player->x_vel, player->x_accel);
+
 
     if (player->health <= 0) {
         al_draw_text(font, al_map_rgb(255, 255, 255), SCREEN_W / 2, SCREEN_H / 2,
@@ -260,7 +271,7 @@ void spa_game_reset() {
         if (player)
             free(player);
 
-        player = spa_entity_create(SCREEN_W / 2, SCREEN_H - (SCREEN_H / 4), 0, 0);
+        player = spa_entity_create(SCREEN_W / 2, SCREEN_H - (SCREEN_H / 4), 0, 0, 0);
         spa_player_init_entity(player);
     } /* ... */
 
@@ -288,22 +299,22 @@ bool spa_loop(bool *redraw) {
     else if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
         switch (ev.keyboard.keycode) {
             case ALLEGRO_KEY_W:
-                player->y_vel = -PLAYER_VEL;
+                player->y_accel = -0.1;
                 break;
             case ALLEGRO_KEY_S:
-                player->y_vel = PLAYER_VEL;
+                player->y_accel = 0.1;
                 break;
             case ALLEGRO_KEY_Q:
-                player->x_vel = -PLAYER_VEL;
+                player->x_accel = -0.1;
                 break;
             case ALLEGRO_KEY_E:
-                player->x_vel = PLAYER_VEL;
+                player->x_accel = 0.1;
                 break;
             case ALLEGRO_KEY_A:
-                player->angle_vel = -PLAYER_THETA;
+                player->theta_accel = -0.0078;
                 break;
             case ALLEGRO_KEY_D:
-                player->angle_vel = PLAYER_THETA;
+                player->theta_accel = 0.0078;
                 break;
             case ALLEGRO_KEY_SPACE:
                 if (score > 0) {
@@ -320,28 +331,28 @@ bool spa_loop(bool *redraw) {
     else if (ev.type == ALLEGRO_EVENT_KEY_UP) {
         switch (ev.keyboard.keycode) {
             case ALLEGRO_KEY_W:
-                if (player->y_vel < 0)
-                    player->y_vel = 0;
+                if (player->y_accel < 0)
+                    player->y_accel = 0;
                 break;
             case ALLEGRO_KEY_S:
-                if (player->y_vel > 0)
-                    player->y_vel = 0;
+                if (player->y_accel > 0)
+                    player->y_accel = 0;
                 break;
             case ALLEGRO_KEY_Q:
-                if (player->x_vel < 0)
-                    player->x_vel = 0;
+                if (player->x_accel < 0)
+                    player->x_accel = 0;
                 break;
             case ALLEGRO_KEY_E:
-                if (player->x_vel > 0)
-                    player->x_vel = 0;
+                if (player->x_accel > 0)
+                    player->x_accel = 0;
                 break;
             case ALLEGRO_KEY_A:
-                if (player->angle_vel < 0)
-                    player->angle_vel = 0;
+                if (player->theta_accel < 0)
+                    player->theta_accel = 0;
                 break;
             case ALLEGRO_KEY_D:
-                if (player->angle_vel > 0)
-                    player->angle_vel = 0;
+                if (player->theta_accel > 0)
+                    player->theta_accel = 0;
                 break;
         }
     }
@@ -451,6 +462,7 @@ void spa_logic_update() {
 		spa_create_haters(hater_list_head, SCREEN_W, SCREEN_H, 10 + level);
 	}
 
+	spa_entity_attenuate(player);
 	spa_entity_update(player, SCREEN_W);
 
 	logic_time = al_get_time() - t;
