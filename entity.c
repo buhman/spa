@@ -124,6 +124,17 @@ bool spa_entity_collide(entity *e1, entity *e2) {
     return true;
 }
 
+void spa_entity_bounce(entity *e1, entity *e2) {
+
+	float r_1 = e1->mass / e2->mass;
+	float r_2 = 1 / r_1;
+
+	e1->x_vel = (e1->x_vel * r_1 - e2->x_vel * r_2) / 2;
+	e1->y_vel = (e1->y_vel * r_1 - e2->y_vel * r_2) / 2;
+	e2->x_vel = (e2->x_vel * r_1 - e1->x_vel * r_2) / 2;
+	e2->y_vel = (e2->y_vel * r_1 - e1->y_vel * r_2) / 2;
+}
+
 void spa_draw_entity(entity *e) {
 
     al_draw_rotated_bitmap(e->bitmap,

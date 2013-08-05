@@ -45,3 +45,5 @@ entity* spa_remove_entity(entity*);
 void spa_clear_entity_list(entity_list*);
 
 void spa_entity_attenuate(entity*);
+
+void spa_entity_bounce(entity*, entity*);

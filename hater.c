@@ -9,10 +9,44 @@
 #include "bullet.h"
 
 ALLEGRO_BITMAP *hater_bitmap = NULL;
+ALLEGRO_BITMAP *hater_dead_bitmap = NULL;
 
 const int HATER_WIDTH = 20;
 const int HATER_HEIGHT = 20;
 const float HATER_THETA = M_PI_4 / 500000;
+
+void spa_hater_draw_bitmap(ALLEGRO_BITMAP *bitmap, 
+		ALLEGRO_COLOR color, ALLEGRO_DISPLAY *display) {
+
+    {
+        int width = HATER_WIDTH - 1;
+        int height = HATER_HEIGHT - 1;
+
+        al_set_target_bitmap(bitmap);
+        
+        al_clear_to_color(al_map_rgba(0, 0, 0, 0));
+
+        al_draw_circle(
+            width / 2, 
+            height / 2 + height / 6, 
+            width / 2.8,
+            color, 1);
+
+        al_draw_circle(
+            width / 8, 
+            height / 8, 
+            width / 6,
+            color, 1);
+
+        al_draw_circle(
+            width - width / 8, 
+            height / 8, 
+            width / 6,
+			color, 1);
+
+        al_set_target_bitmap(al_get_backbuffer(display));
+    } /* ... */
+}
 
 bool spa_hater_init(ALLEGRO_DISPLAY *display) {
 
@@ -25,33 +59,15 @@ bool spa_hater_init(ALLEGRO_DISPLAY *display) {
     } /* ... */
 
     {
-        int width = HATER_WIDTH - 1;
-        int height = HATER_HEIGHT - 1;
-
-        al_set_target_bitmap(hater_bitmap);
-        
-        al_clear_to_color(al_map_rgba(0, 0, 0, 0));
-
-        al_draw_circle(
-            width / 2, 
-            height / 2 + height / 6, 
-            width / 2.8,
-            al_map_rgb(0, 255, 255), 1);
-
-        al_draw_circle(
-            width / 8, 
-            height / 8, 
-            width / 6,
-            al_map_rgb(0, 255, 255), 1);
-
-        al_draw_circle(
-            width - width / 8, 
-            height / 8, 
-            width / 6,
-            al_map_rgb(0, 255, 255), 1);
-
-        al_set_target_bitmap(al_get_backbuffer(display));
+        hater_dead_bitmap = al_create_bitmap(HATER_WIDTH, HATER_HEIGHT);
+        if (!hater_dead_bitmap) {
+            fprintf(stderr, "al_create_bitmap(): failed\n");
+            return false;
+        }
     } /* ... */
+
+	spa_hater_draw_bitmap(hater_bitmap, al_map_rgb(128, 255, 128), display);
+	spa_hater_draw_bitmap(hater_dead_bitmap, al_map_rgb(128, 128, 128), display);
 
     return true;
 }

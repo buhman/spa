@@ -432,13 +432,21 @@ void spa_logic_update() {
 	hater = hater_list_head->lh_first;
 	while (hater != NULL) {
 		if (spa_entity_collide(player, hater)) {
+			spa_entity_bounce(player, hater);
 			score += 5;
-			spa_player_damage(player, 10, timer);
-			hater = spa_remove_entity(hater);
-			continue;
+			
+			if (hater->health > 0)
+				spa_player_damage(player, 10, timer);
+
+			hater->health -= 10;
+
+			//hater = spa_remove_entity(hater);
+			//continue;
 		}
 
-		spa_hater_update(hater, player, bullet_list_head, level);
+		if (hater->health > 0)
+			spa_hater_update(hater, player, bullet_list_head, level);
+
 		spa_entity_update(hater, SCREEN_W);
 		hater = hater->entity_p.le_next;
 		hater_count++;
