@@ -66,7 +66,7 @@ bool spa_hater_init(ALLEGRO_DISPLAY *display) {
         }
     } /* ... */
 
-	spa_hater_draw_bitmap(hater_bitmap, al_map_rgb(128, 255, 128), display);
+	spa_hater_draw_bitmap(hater_bitmap, al_map_rgb(0, 255, 255), display);
 	spa_hater_draw_bitmap(hater_dead_bitmap, al_map_rgb(128, 128, 128), display);
 
     return true;
