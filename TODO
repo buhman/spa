@@ -11,6 +11,12 @@ movement/physics:
 leveling:
     temporary invulnerability on level-up?
     make ai spawn area either the entire "map" or north of "map", rather than in player view
+	player ship improves on level-up
+		- more weapons
+		- laser beams
+		- mini gun / powerful machine gun
+		- faster bullets
+		- missle lock		
 
 graphics:
     a parallaxing 'star' background
