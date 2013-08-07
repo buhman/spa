@@ -26,7 +26,7 @@ entity_list *hater_list_head;
 poof_list *poof_list_head;
 
 int score;
-int level = 1;
+int level = 0;
 
 int hater_count;
 int bullet_count;
@@ -244,6 +244,19 @@ void spa_osd() {
 			"p->x: %.2f ; p->x_v: %.2f ; p->x_a: %.2f", 
 			player->x, player->x_vel, player->x_accel);
 
+	char* weapon = "null";
+
+	switch (player->type) {
+		case rifle:
+			weapon = "rifle";
+			break;
+		case laser:
+			weapon = "laser";
+			break;
+	}
+
+	al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W / 2, 2, ALLEGRO_ALIGN_CENTER,
+			"weapon: %s", weapon);
 
     if (player->health <= 0) {
         al_draw_text(font, al_map_rgb(255, 255, 255), SCREEN_W / 2, SCREEN_H / 2,
@@ -324,6 +337,12 @@ bool spa_loop(bool *redraw) {
             case ALLEGRO_KEY_BACKSPACE:
                 spa_game_reset();
                 break;
+			case ALLEGRO_KEY_1:
+				player->type = rifle;
+				break;
+			case ALLEGRO_KEY_2:
+				player->type = laser;
+				break;
         }
     }
 
