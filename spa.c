@@ -25,10 +25,8 @@ entity *player;
 
 entity_list *bullet_list_head;
 entity_list *hater_list_head;
-entity_list *laser_list_head;
 
 poof_list *poof_list_head;
-
 
 int score;
 int level = 0;
@@ -36,7 +34,8 @@ int level = 0;
 int hater_count;
 int bullet_count;
 int poof_count;
-int laser_count;
+
+bool player_laser = false;
 
 double init_time;
 
@@ -145,11 +144,6 @@ bool spa_init() {
         LIST_INIT(bullet_list_head);
     } /* ... */
 
-	{
-		laser_list_head = malloc(sizeof(entity_list));
-		LIST_INIT(laser_list_head);
-	} /* ... */
-
     {
         hater_list_head = malloc(sizeof(entity_list));
         LIST_INIT(hater_list_head);
@@ -215,11 +209,8 @@ void spa_render() {
 	} /* ... */
 
 	{
-		entity* laser;
-		for (laser = laser_list_head->lh_first; laser != NULL;
-				laser = laser->entity_p.le_next) {
-			spa_laser_draw(laser, SCREEN_W, SCREEN_H);
-		}
+		if (player_laser)
+			spa_laser_draw(player, SCREEN_W, SCREEN_H);
 	} /* ... */
 
 	render_time = al_get_time() - t;
@@ -238,8 +229,6 @@ void spa_osd() {
 
     al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 38, ALLEGRO_ALIGN_LEFT,
             "bullets: %d", bullet_count);
-    al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 50, ALLEGRO_ALIGN_LEFT,
-            "lasers: %d", laser_count);
     al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 62, ALLEGRO_ALIGN_LEFT,
             "haters: %d", hater_count);
 	al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 74, ALLEGRO_ALIGN_LEFT,
@@ -298,7 +287,6 @@ void spa_game_reset() {
     {
         spa_clear_entity_list(hater_list_head);
         spa_clear_entity_list(bullet_list_head);
-		spa_clear_entity_list(laser_list_head);
     } /* ... */
 
     {
@@ -357,8 +345,7 @@ bool spa_loop(bool *redraw) {
 						score -= 2;
 					}
 					if (player->type == laser) {
-						spa_add_bullet(laser_list_head, player);
-						score -= 10;
+						player_laser = true;
 					}
                 }
                 break;
@@ -367,6 +354,7 @@ bool spa_loop(bool *redraw) {
                 break;
 			case ALLEGRO_KEY_1:
 				player->type = rifle;
+				player_laser = false;
 				break;
 			case ALLEGRO_KEY_2:
 				player->type = laser;
@@ -400,6 +388,9 @@ bool spa_loop(bool *redraw) {
                 if (player->theta_accel > 0)
                     player->theta_accel = 0;
                 break;
+			case ALLEGRO_KEY_SPACE:
+				if (player_laser)
+					player_laser = 0;
         }
     }
 
@@ -419,7 +410,6 @@ void spa_logic_update() {
 	
 	entity *bullet;
 	entity *hater;
-	entity *laser;
 	poof *poof;
 
 	bullet_count = 0;
@@ -476,35 +466,22 @@ void spa_logic_update() {
 		continue;
 	}
 
-	laser_count = 0;
-	laser = laser_list_head->lh_first;
-	while (laser != NULL) {
-		{
-			if (al_get_time() > laser->last_update + 1) {
-				laser = spa_remove_entity(laser);
-				continue;
-			}
-		} /* ... */
-
-        {
-			hater = hater_list_head->lh_first;
-			while (hater != NULL) {
-				if (spa_laser_collide(hater, laser, SCREEN_W, SCREEN_H)) {
-					
-					hater->health -= 10;
-					if (hater->health <= 0) {
-						hater = spa_remove_entity(hater);
-						continue;
-					}
+	if (player_laser) {
+		hater = hater_list_head->lh_first;
+		while (hater != NULL) {
+			if (spa_laser_collide(hater, player, SCREEN_W, SCREEN_H)) {
+				
+				hater->health -= 10;
+				if (hater->health <= 0) {
+					hater = spa_remove_entity(hater);
+					continue;
 				}
-
-				hater = hater->entity_p.le_next;
 			}
-		} /* ... */
 
-		laser = laser->entity_p.le_next;
-		laser_count++;
-	}
+			hater = hater->entity_p.le_next;
+		}
+	} /* ... */
+
 
 	hater_count = 0;
 	hater = hater_list_head->lh_first;
@@ -570,7 +547,6 @@ cleanup:
     {
 		spa_clear_entity_list(hater_list_head);
 		spa_clear_entity_list(bullet_list_head);
-		spa_clear_entity_list(laser_list_head);
 
         spa_player_destroy();
         spa_bullet_destroy();
