@@ -35,8 +35,6 @@ int hater_count;
 int bullet_count;
 int poof_count;
 
-bool player_laser = false;
-
 double init_time;
 
 double logic_time;
@@ -209,7 +207,7 @@ void spa_render() {
 	} /* ... */
 
 	{
-		if (player_laser)
+		if (player->type == laser && score > 0)
 			spa_laser_draw(player, SCREEN_W, SCREEN_H);
 	} /* ... */
 
@@ -344,9 +342,6 @@ bool spa_loop(bool *redraw) {
 						spa_add_bullet(bullet_list_head, player);
 						score -= 2;
 					}
-					if (player->type == laser) {
-						player_laser = true;
-					}
                 }
                 break;
             case ALLEGRO_KEY_BACKSPACE:
@@ -354,7 +349,6 @@ bool spa_loop(bool *redraw) {
                 break;
 			case ALLEGRO_KEY_1:
 				player->type = rifle;
-				player_laser = false;
 				break;
 			case ALLEGRO_KEY_2:
 				player->type = laser;
@@ -389,8 +383,8 @@ bool spa_loop(bool *redraw) {
                     player->theta_accel = 0;
                 break;
 			case ALLEGRO_KEY_SPACE:
-				if (player_laser)
-					player_laser = 0;
+				if (player->type == laser)
+					player->type = rifle;
         }
     }
 
@@ -466,7 +460,7 @@ void spa_logic_update() {
 		continue;
 	}
 
-	if (player_laser && score > 0) {
+	if (player->type == laser && score > 0) {
 		score -= 0.1;
 		hater = hater_list_head->lh_first;
 		while (hater != NULL) {
@@ -483,9 +477,6 @@ void spa_logic_update() {
 			hater = hater->entity_p.le_next;
 		}
 	}
-	else if (player_laser)
-		player_laser = 0;
-
 
 	hater_count = 0;
 	hater = hater_list_head->lh_first;
