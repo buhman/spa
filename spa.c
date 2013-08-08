@@ -260,6 +260,7 @@ void spa_osd() {
 void spa_game_reset() {
     
     score = 10;
+	level = 1;
 
     {
         spa_clear_entity_list(hater_list_head);
