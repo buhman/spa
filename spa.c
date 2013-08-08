@@ -36,6 +36,7 @@ int level = 0;
 int hater_count;
 int bullet_count;
 int poof_count;
+int laser_count;
 
 double init_time;
 
@@ -238,8 +239,10 @@ void spa_osd() {
     al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 38, ALLEGRO_ALIGN_LEFT,
             "bullets: %d", bullet_count);
     al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 50, ALLEGRO_ALIGN_LEFT,
+            "lasers: %d", laser_count);
+    al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 62, ALLEGRO_ALIGN_LEFT,
             "haters: %d", hater_count);
-	al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 62, ALLEGRO_ALIGN_LEFT,
+	al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 74, ALLEGRO_ALIGN_LEFT,
             "poofs: %d", poof_count);
 
 
@@ -416,6 +419,7 @@ void spa_logic_update() {
 	
 	entity *bullet;
 	entity *hater;
+	entity *laser;
 	poof *poof;
 
 	bullet_count = 0;
@@ -470,6 +474,36 @@ void spa_logic_update() {
 
 	bullet_loop_end:
 		continue;
+	}
+
+	laser_count = 0;
+	laser = laser_list_head->lh_first;
+	while (laser != NULL) {
+		{
+			if (al_get_time() > laser->last_update + 1) {
+				laser = spa_remove_entity(laser);
+				continue;
+			}
+		} /* ... */
+
+        {
+			hater = hater_list_head->lh_first;
+			while (hater != NULL) {
+				if (spa_laser_collide(hater, laser, SCREEN_W, SCREEN_H)) {
+					
+					hater->health -= 10;
+					if (hater->health <= 0) {
+						hater = spa_remove_entity(hater);
+						continue;
+					}
+				}
+
+				hater = hater->entity_p.le_next;
+			}
+		} /* ... */
+
+		laser = laser->entity_p.le_next;
+		laser_count++;
 	}
 
 	hater_count = 0;
