@@ -29,8 +29,6 @@ bool spa_laser_collide(entity *e, entity *l, int width, int height) {
 	int x1 = e->x - e->width / 2;
 	int y2 = e->y + e->height / 2;
 	int y1 = e->y - e->width / 2;
-
-	long *x = 0, *y = 0;
 	
 	if (lines_intersect(x1, y1, x2, y1,
 				l->x, l->y, lx2, ly2) ||
