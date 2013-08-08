@@ -28,7 +28,7 @@ entity_list *hater_list_head;
 
 poof_list *poof_list_head;
 
-int score;
+float score;
 int level = 0;
 
 int hater_count;
@@ -223,7 +223,7 @@ void spa_osd() {
     al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 2, ALLEGRO_ALIGN_LEFT,
             "health: %d", player->health);
     al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 14, ALLEGRO_ALIGN_LEFT,
-            "score: %d", score);
+            "score: %.1f", score);
     al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 26, ALLEGRO_ALIGN_LEFT,
             "level: %d", level);
 
@@ -466,7 +466,8 @@ void spa_logic_update() {
 		continue;
 	}
 
-	if (player_laser) {
+	if (player_laser && score > 0) {
+		score -= 0.1;
 		hater = hater_list_head->lh_first;
 		while (hater != NULL) {
 			if (spa_laser_collide(hater, player, SCREEN_W, SCREEN_H)) {
@@ -474,13 +475,16 @@ void spa_logic_update() {
 				hater->health -= 10;
 				if (hater->health <= 0) {
 					hater = spa_remove_entity(hater);
+					score += 5;
 					continue;
 				}
 			}
 
 			hater = hater->entity_p.le_next;
 		}
-	} /* ... */
+	}
+	else if (player_laser)
+		player_laser = 0;
 
 
 	hater_count = 0;
