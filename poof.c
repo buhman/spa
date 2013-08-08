@@ -9,13 +9,14 @@
 
 const float interval = 0.6283185307179586;
 
-poof* spa_poof_create(int x, int y) {
+poof* spa_poof_create(int x, int y, ALLEGRO_COLOR color) {
 
 	poof *p = malloc(sizeof(poof));
 
 	p->x = x;
 	p->y = y;
-	
+	p->color = color;
+
 	return p;
 }
 
@@ -24,9 +25,9 @@ void spa_poof_destroy(poof* p) {
 		free(p);
 }
 
-void spa_poof_add(poof_list* lh, int x, int y) {
+void spa_poof_add(poof_list* lh, int x, int y, ALLEGRO_COLOR color) {
 
-	poof* p = spa_poof_create(x, y);
+	poof* p = spa_poof_create(x, y, color);
 	LIST_INSERT_HEAD(lh, p, poof_p);
 }
 
@@ -45,7 +46,7 @@ void spa_poof_draw(poof* p) {
 		float theta = interval * i;
 		float x = p->iteration * cos(theta) + p->x;
 		float y = p->iteration * sin(theta) + p->y;
-		al_draw_pixel(x, y, al_map_rgb(255, 0, 0));
+		al_draw_pixel(x, y, p->color);
 	}
 	
 	p->iteration++;

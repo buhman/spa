@@ -342,6 +342,9 @@ bool spa_loop(bool *redraw) {
 						spa_add_bullet(bullet_list_head, player);
 						score -= 2;
 					}
+					if (player->type == laser) {
+						player->type = rifle;
+					}
                 }
                 break;
             case ALLEGRO_KEY_BACKSPACE:
@@ -382,16 +385,8 @@ bool spa_loop(bool *redraw) {
                 if (player->theta_accel > 0)
                     player->theta_accel = 0;
                 break;
-			case ALLEGRO_KEY_SPACE:
-				if (player->type == laser)
-					player->type = rifle;
         }
     }
-
-	else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
-		fprintf(stdout, "x: %d y: %d\n", ev.mouse.x, ev.mouse.y);
-		spa_poof_add(poof_list_head, ev.mouse.x, ev.mouse.y);
-	}
 
 	event_time = al_get_time() - t;
 	
@@ -423,7 +418,7 @@ void spa_logic_update() {
 
 				spa_player_damage(player, 5, timer);
 
-				spa_poof_add(poof_list_head, bullet->x, bullet->y);
+				spa_poof_add(poof_list_head, bullet->x, bullet->y, al_map_rgb(255, 0, 0));
 				bullet = spa_remove_entity(bullet);
 				goto bullet_loop_end;
 			}
@@ -436,7 +431,7 @@ void spa_logic_update() {
 
 					score += 10;
 					hater->health -= 5;
-					spa_poof_add(poof_list_head, bullet->x, bullet->y);
+					spa_poof_add(poof_list_head, bullet->x, bullet->y, al_map_rgb(255, 0, 0));
 					bullet = spa_remove_entity(bullet);
 
 					if (hater->health <= 0) {
@@ -464,9 +459,11 @@ void spa_logic_update() {
 		score -= 1;
 		hater = hater_list_head->lh_first;
 		while (hater != NULL) {
-			if (spa_laser_collide(hater, player, SCREEN_W, SCREEN_H)) {
+			long cx, cy;
+			if (spa_laser_collide(hater, player, SCREEN_W, SCREEN_H, &cx, &cy)) {
 				
-				hater->health -= 10;
+				spa_poof_add(poof_list_head, cx, cy, al_map_rgb(0, 255, 0));
+				hater->health -= 0.1;
 				if (hater->health <= 0) {
 					hater = spa_remove_entity(hater);
 					score += 5;

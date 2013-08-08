@@ -15,11 +15,12 @@
 	(((long) ((unsigned long) a ^ (unsigned long) b)) >= 0 )
 
 int lines_intersect(long x1, long y1, long x2, long y2,
-		long x3, long y3, long x4, long y4) {
+		long x3, long y3, long x4, long y4,
+		long *x, long *y) {
 
 	long a1, a2, b1, b2, c1, c2; /* Coefficients of line eqns. */
 	long r1, r2, r3, r4;         /* 'Sign' values */
-	long denom; //, offset, num;     /* Intermediate values */
+	long denom, offset, num;     /* Intermediate values */
 
 	/* Compute a1, b1, c1, where line joining points 1 and 2
 	 * is "a1 x  +  b1 y  +  c1  =  0".
@@ -72,18 +73,18 @@ int lines_intersect(long x1, long y1, long x2, long y2,
 	denom = a1 * b2 - a2 * b1;
 	if ( denom == 0 )
 		return ( COLLINEAR );
-	//offset = denom < 0 ? - denom / 2 : denom / 2;
+	offset = denom < 0 ? - denom / 2 : denom / 2;
 
 	/* The denom/2 is to get rounding instead of truncating.  It
 	 * is added or subtracted to the numerator, depending upon the
 	 * sign of the numerator.
 	 */
 
-	//num = b1 * c2 - b2 * c1;
-	//*x = ( num < 0 ? num - offset : num + offset ) / denom;
+	num = b1 * c2 - b2 * c1;
+	*x = ( num < 0 ? num - offset : num + offset ) / denom;
 
-	//num = a2 * c1 - a1 * c2;
-	//*y = ( num < 0 ? num - offset : num + offset ) / denom;
+	num = a2 * c1 - a1 * c2;
+	*y = ( num < 0 ? num - offset : num + offset ) / denom;
 
 	return ( DO_INTERSECT );
 } /* lines_intersect */
