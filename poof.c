@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#define __USE_BSD
 #include <math.h>
 #include <sys/queue.h>
 

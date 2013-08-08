@@ -14,6 +14,7 @@
 #include "bullet.h"
 #include "hater.h"
 #include "poof.h"
+#include "laser.h"
 
 ALLEGRO_DISPLAY *display;
 ALLEGRO_EVENT_QUEUE *event_queue;
@@ -21,9 +22,13 @@ ALLEGRO_TIMER *timer;
 ALLEGRO_FONT *font;
 
 entity *player;
+
 entity_list *bullet_list_head;
 entity_list *hater_list_head;
+entity_list *laser_list_head;
+
 poof_list *poof_list_head;
+
 
 int score;
 int level = 0;
@@ -139,6 +144,11 @@ bool spa_init() {
         LIST_INIT(bullet_list_head);
     } /* ... */
 
+	{
+		laser_list_head = malloc(sizeof(entity_list));
+		LIST_INIT(laser_list_head);
+	} /* ... */
+
     {
         hater_list_head = malloc(sizeof(entity_list));
         LIST_INIT(hater_list_head);
@@ -200,6 +210,14 @@ void spa_render() {
 				poof = poof->poof_p.le_next) {
 
 			spa_poof_draw(poof);
+		}
+	} /* ... */
+
+	{
+		entity* laser;
+		for (laser = laser_list_head->lh_first; laser != NULL;
+				laser = laser->entity_p.le_next) {
+			spa_laser_draw(laser, SCREEN_W, SCREEN_H);
 		}
 	} /* ... */
 
@@ -277,6 +295,7 @@ void spa_game_reset() {
     {
         spa_clear_entity_list(hater_list_head);
         spa_clear_entity_list(bullet_list_head);
+		spa_clear_entity_list(laser_list_head);
     } /* ... */
 
     {
@@ -330,8 +349,14 @@ bool spa_loop(bool *redraw) {
                 break;
             case ALLEGRO_KEY_SPACE:
                 if (score > 0) {
-                    spa_add_bullet(bullet_list_head, player);
-                    score -= 1;
+					if (player->type == rifle) {
+						spa_add_bullet(bullet_list_head, player);
+						score -= 2;
+					}
+					if (player->type == laser) {
+						spa_add_bullet(laser_list_head, player);
+						score -= 10;
+					}
                 }
                 break;
             case ALLEGRO_KEY_BACKSPACE:
@@ -511,6 +536,7 @@ cleanup:
     {
 		spa_clear_entity_list(hater_list_head);
 		spa_clear_entity_list(bullet_list_head);
+		spa_clear_entity_list(laser_list_head);
 
         spa_player_destroy();
         spa_bullet_destroy();

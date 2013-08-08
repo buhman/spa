@@ -41,7 +41,7 @@ entity* spa_entity_create(float x, float y, float x_vel, float y_vel, float thet
 		e->mass= 1;
 
         e->type = 0;
-		e->last_update = 0;
+		e->last_update = al_get_time();
 
         e->bitmap = NULL;
     } /* ... */
