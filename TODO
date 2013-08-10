@@ -1,25 +1,29 @@
+refactor:
+    remove all the duplicated code tidbits everywhere
+
 map:
     or make the world scroll up/down?
     haters drop powerups.
+    make ai spawn area north of "map", rather than in player view
 
 movement/physics:
     give objects mass and make them bounce on collision.
 
 leveling:
     temporary invulnerability on level-up?
-    make ai spawn area north of "map", rather than in player view
-	player ship improves on level-up
-		- more weapons
-		- laser beams
-		- mini gun / powerful machine gun
-		- faster bullets
-		- missle lock		
+    player ship improves on level-up
+        - more weapons
+        - laser beams (done?)
+        - mini gun / powerful machine gun
+        - faster bullets
+        - missle lock
 
 graphics:
     a parallaxing 'star' background
     represet more ship types graphically
-        make bullet drawing simpler
-        draw player mid-warp on both sides of warp rather than jumping
+    make bullet drawing simpler
+    draw player mid-warp on both sides of warp rather than jumping
 
 ai:
     different hater behaviors for different ship types.
+    haters fire at future location rather than present location
