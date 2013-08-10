@@ -7,8 +7,8 @@
 typedef enum WEAPON WEAPON;
 
 enum WEAPON {
-	rifle,
-	laser
+    rifle,
+    laser
 };
 
 bool spa_player_init(ALLEGRO_DISPLAY*);
