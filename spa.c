@@ -307,6 +307,7 @@ bool spa_loop(bool *redraw) {
     double t = al_get_time();
 
     ALLEGRO_EVENT ev;
+    ALLEGRO_KEYBOARD_STATE ks;
 
     al_wait_for_event(event_queue, &ev);
 
@@ -338,23 +339,18 @@ bool spa_loop(bool *redraw) {
                 break;
             case ALLEGRO_KEY_SPACE:
                 if (score > 0) {
-                    if (player->type == rifle) {
+                    al_get_keyboard_state(&ks);
+                    if (al_key_down(&ks, ALLEGRO_KEY_LCTRL))
+                        player->type = laser;
+                    else {
+                        player->type = rifle;
                         spa_add_bullet(bullet_list_head, player);
                         score -= 2;
-                    }
-                    if (player->type == laser) {
-                        player->type = rifle;
                     }
                 }
                 break;
             case ALLEGRO_KEY_BACKSPACE:
                 spa_game_reset();
-                break;
-            case ALLEGRO_KEY_1:
-                player->type = rifle;
-                break;
-            case ALLEGRO_KEY_2:
-                player->type = laser;
                 break;
         }
     }
@@ -385,6 +381,10 @@ bool spa_loop(bool *redraw) {
                 if (player->theta_accel > 0)
                     player->theta_accel = 0;
                 break;
+            case ALLEGRO_KEY_SPACE:
+                if (player->type == laser) {
+                    player->type = rifle;
+                }
         }
     }
 
