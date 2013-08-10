@@ -227,9 +227,9 @@ void spa_osd() {
 
     al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 38, ALLEGRO_ALIGN_LEFT,
             "bullets: %d", bullet_count);
-    al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 62, ALLEGRO_ALIGN_LEFT,
+    al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 50, ALLEGRO_ALIGN_LEFT,
             "haters: %d", hater_count);
-	al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 74, ALLEGRO_ALIGN_LEFT,
+	al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 62, ALLEGRO_ALIGN_LEFT,
             "poofs: %d", poof_count);
 
 
