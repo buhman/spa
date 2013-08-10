@@ -340,7 +340,7 @@ bool spa_loop(bool *redraw) {
             case ALLEGRO_KEY_SPACE:
                 if (score > 0) {
                     al_get_keyboard_state(&ks);
-                    if (al_key_down(&ks, ALLEGRO_KEY_LCTRL))
+                    if (al_key_down(&ks, ALLEGRO_KEY_CAPSLOCK))
                         player->type = laser;
                     else {
                         player->type = rifle;
