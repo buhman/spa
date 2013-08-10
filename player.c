@@ -44,6 +44,10 @@ void spa_player_init_entity(entity *e) {
 
     spa_entity_init(e, player_bitmap);
 
+<<<<<<< HEAD
+=======
+    e->type = rifle;
+>>>>>>> long-laser
     e->mass = 5;
     e->health = 100;
 }

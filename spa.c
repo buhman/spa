@@ -14,6 +14,7 @@
 #include "bullet.h"
 #include "hater.h"
 #include "poof.h"
+#include "laser.h"
 
 ALLEGRO_DISPLAY *display;
 ALLEGRO_EVENT_QUEUE *event_queue;
@@ -21,12 +22,14 @@ ALLEGRO_TIMER *timer;
 ALLEGRO_FONT *font;
 
 entity *player;
+
 entity_list *bullet_list_head;
 entity_list *hater_list_head;
+
 poof_list *poof_list_head;
 
 int score;
-int level = 1;
+int level = 0;
 
 int hater_count;
 int bullet_count;
@@ -160,7 +163,7 @@ bool spa_init() {
                 al_get_keyboard_event_source());
 
         //al_register_event_source(event_queue,
-        //              al_get_mouse_event_source());
+        //      al_get_mouse_event_source());
     } /* ... */
 
     spa_game_reset();
@@ -201,6 +204,11 @@ void spa_render() {
 
             spa_poof_draw(poof);
         }
+    } /* ... */
+
+    {
+        if (player->type == laser && score > 0)
+            spa_laser_draw(player, SCREEN_W, SCREEN_H);
     } /* ... */
 
     render_time = al_get_time() - t;
@@ -244,6 +252,19 @@ void spa_osd() {
             "p->x: %.2f ; p->x_v: %.2f ; p->x_a: %.2f", 
             player->x, player->x_vel, player->x_accel);
 
+    char* weapon = "null";
+
+    switch (player->type) {
+        case rifle:
+            weapon = "rifle";
+            break;
+        case laser:
+            weapon = "laser";
+            break;
+    }
+
+    al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W / 2, 2, ALLEGRO_ALIGN_CENTER,
+            "weapon: %s", weapon);
 
     if (player->health <= 0) {
         al_draw_text(font, al_map_rgb(255, 255, 255), SCREEN_W / 2, SCREEN_H / 2,
@@ -287,6 +308,7 @@ bool spa_loop(bool *redraw) {
     double t = al_get_time();
 
     ALLEGRO_EVENT ev;
+    ALLEGRO_KEYBOARD_STATE ks;
 
     al_wait_for_event(event_queue, &ev);
 
@@ -318,8 +340,14 @@ bool spa_loop(bool *redraw) {
                 break;
             case ALLEGRO_KEY_SPACE:
                 if (score > 0) {
-                    spa_add_bullet(bullet_list_head, player);
-                    score -= 1;
+                    al_get_keyboard_state(&ks);
+                    if (al_key_down(&ks, ALLEGRO_KEY_CAPSLOCK))
+                        player->type = laser;
+                    else {
+                        player->type = rifle;
+                        spa_add_bullet(bullet_list_head, player);
+                        score -= 2;
+                    }
                 }
                 break;
             case ALLEGRO_KEY_BACKSPACE:
@@ -354,6 +382,10 @@ bool spa_loop(bool *redraw) {
                 if (player->theta_accel > 0)
                     player->theta_accel = 0;
                 break;
+            case ALLEGRO_KEY_SPACE:
+                if (player->type == laser) {
+                    player->type = rifle;
+                }
         }
     }
 
@@ -392,7 +424,7 @@ void spa_logic_update() {
 
                 spa_player_damage(player, 5, timer);
 
-                spa_poof_add(poof_list_head, bullet->x, bullet->y);
+                spa_poof_add(poof_list_head, bullet->x, bullet->y, al_map_rgb(255, 0, 0));
                 bullet = spa_remove_entity(bullet);
                 goto bullet_loop_end;
             }
@@ -405,7 +437,8 @@ void spa_logic_update() {
 
                     score += 10;
                     hater->health -= 5;
-                    spa_poof_add(poof_list_head, bullet->x, bullet->y);
+                    spa_poof_add(poof_list_head, bullet->x, bullet->y, al_map_rgb(255, 0, 0));
+                    
                     bullet = spa_remove_entity(bullet);
 
                     if (hater->health <= 0) {
@@ -427,6 +460,26 @@ void spa_logic_update() {
 
 bullet_loop_end:
         continue;
+    }
+
+    if (player->type == laser && score > 0) {
+        score -= 1;
+        hater = hater_list_head->lh_first;
+        while (hater != NULL) {
+            long cx, cy;
+            if (spa_laser_collide(hater, player, SCREEN_W, SCREEN_H, &cx, &cy)) {
+
+                spa_poof_add(poof_list_head, cx, cy, al_map_rgb(0, 255, 0));
+                hater->health -= 0.1;
+                if (hater->health <= 0) {
+                    hater = spa_remove_entity(hater);
+                    score += 5;
+                    continue;
+                }
+            }
+
+            hater = hater->entity_p.le_next;
+        }
     }
 
     hater_count = 0;
