@@ -61,7 +61,7 @@ void spa_hater_init_entity(entity* hater) {
     spa_entity_init(hater, hater_bitmap);
 
     hater->type = rand();
-	hater->mass = 3;
+        hater->mass = 3;
 }
 
 void spa_hater_destroy() {
@@ -82,10 +82,10 @@ void spa_hater_update(entity* hater, entity* player, entity_list *lh, int level)
 
     {
         int r = rand() % 255;
-		if (r > 255 - (level * 1.1)) {
-		
-			spa_add_bullet(lh, hater);
-		}
+                if (r > 255 - (level * 1.1)) {
+                
+                        spa_add_bullet(lh, hater);
+                }
 
     } /* ... */
 }

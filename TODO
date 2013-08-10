@@ -12,8 +12,8 @@ leveling:
 graphics:
     a parallaxing 'star' background
     represet more ship types graphically
-	make bullet drawing simpler
-	draw player mid-warp on both sides of warp rather than jumping
+        make bullet drawing simpler
+        draw player mid-warp on both sides of warp rather than jumping
 
 ai:
     different hater behaviors for different ship types.

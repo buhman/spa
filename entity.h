@@ -20,10 +20,10 @@ struct entity {
     float theta;
     float theta_vel;
     float theta_accel;
-	int mass;
+        int mass;
     int last_update;
     ALLEGRO_BITMAP *bitmap;
-	LIST_ENTRY(entity) entity_p;
+        LIST_ENTRY(entity) entity_p;
 };
 
 LIST_HEAD(entity_list, entity);

@@ -28,20 +28,20 @@ entity* spa_entity_create(float x, float y, float x_vel, float y_vel, float thet
 
         e->x_vel = x_vel;
         e->y_vel = y_vel;
-		e->theta_vel = 0;
+                e->theta_vel = 0;
 
-		e->x_accel = 0;
-		e->y_accel = 0;
-		e->theta_accel = 0;
+                e->x_accel = 0;
+                e->y_accel = 0;
+                e->theta_accel = 0;
 
         e->width = 0;
         e->height = 0;
 
         e->health = 1;
-		e->mass= 1;
+                e->mass= 1;
 
         e->type = 0;
-		e->last_update = 0;
+                e->last_update = 0;
 
         e->bitmap = NULL;
     } /* ... */
@@ -68,18 +68,18 @@ void spa_entity_destroy(entity *e) {
 
 void spa_entity_attenuate(entity *e) {
 
-	if (e->x_accel == 0 && e->x_vel != 0) {
-		e->x_vel *= 0.96;
-	}
-	if (e->y_accel == 0 && e->y_vel != 0) {
-		e->y_vel *= 0.96;
-	}
-	if (e->theta_accel == 0 && e->theta_vel != 0) {
-		e->theta_vel *= 0.96;
-	}
+        if (e->x_accel == 0 && e->x_vel != 0) {
+                e->x_vel *= 0.96;
+        }
+        if (e->y_accel == 0 && e->y_vel != 0) {
+                e->y_vel *= 0.96;
+        }
+        if (e->theta_accel == 0 && e->theta_vel != 0) {
+                e->theta_vel *= 0.96;
+        }
 }
 
-void spa_entity_update(entity *e, int screen_width) {	
+void spa_entity_update(entity *e, int screen_width) {   
 
     if (e->x_vel + e->x_accel < TERMINAL_VELOCITY && 
             e->x_vel + e->x_accel > -TERMINAL_VELOCITY)
