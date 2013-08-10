@@ -29,7 +29,7 @@ bool spa_player_init(ALLEGRO_DISPLAY *display) {
         al_clear_to_color(al_map_rgba(0, 0, 0, 0));
 
         al_draw_triangle(0, height, width, height, width / 2, 0,
-            al_map_rgb(255, 0, 255), 1);
+                al_map_rgb(255, 0, 255), 1);
 
         al_draw_triangle(0, height, 1, 1, width / 3, height, al_map_rgb(255, 0, 255), 1);
         al_draw_triangle(width, height, width, 1, width - (width / 3), height , al_map_rgb(255, 0, 255), 1);
@@ -41,10 +41,10 @@ bool spa_player_init(ALLEGRO_DISPLAY *display) {
 }
 
 void spa_player_init_entity(entity *e) {
-    
-        spa_entity_init(e, player_bitmap);
 
-        e->mass = 5;
+    spa_entity_init(e, player_bitmap);
+
+    e->mass = 5;
     e->health = 100;
 }
 

@@ -29,26 +29,26 @@ bool spa_hater_init(ALLEGRO_DISPLAY *display) {
         int height = HATER_HEIGHT - 1;
 
         al_set_target_bitmap(hater_bitmap);
-        
+
         al_clear_to_color(al_map_rgba(0, 0, 0, 0));
 
         al_draw_circle(
-            width / 2, 
-            height / 2 + height / 6, 
-            width / 2.8,
-            al_map_rgb(0, 255, 255), 1);
+                width / 2, 
+                height / 2 + height / 6, 
+                width / 2.8,
+                al_map_rgb(0, 255, 255), 1);
 
         al_draw_circle(
-            width / 8, 
-            height / 8, 
-            width / 6,
-            al_map_rgb(0, 255, 255), 1);
+                width / 8, 
+                height / 8, 
+                width / 6,
+                al_map_rgb(0, 255, 255), 1);
 
         al_draw_circle(
-            width - width / 8, 
-            height / 8, 
-            width / 6,
-            al_map_rgb(0, 255, 255), 1);
+                width - width / 8, 
+                height / 8, 
+                width / 6,
+                al_map_rgb(0, 255, 255), 1);
 
         al_set_target_bitmap(al_get_backbuffer(display));
     } /* ... */
@@ -61,7 +61,7 @@ void spa_hater_init_entity(entity* hater) {
     spa_entity_init(hater, hater_bitmap);
 
     hater->type = rand();
-        hater->mass = 3;
+    hater->mass = 3;
 }
 
 void spa_hater_destroy() {
@@ -70,7 +70,7 @@ void spa_hater_destroy() {
 }
 
 void spa_hater_update(entity* hater, entity* player, entity_list *lh, int level) {
-    
+
     {
         float o = (hater->y - player->y);
         float a = (hater->x - player->x);
@@ -82,19 +82,19 @@ void spa_hater_update(entity* hater, entity* player, entity_list *lh, int level)
 
     {
         int r = rand() % 255;
-                if (r > 255 - (level * 1.1)) {
-                
-                        spa_add_bullet(lh, hater);
-                }
+        if (r > 255 - (level * 1.1)) {
+
+            spa_add_bullet(lh, hater);
+        }
 
     } /* ... */
 }
 
 void spa_create_haters(entity_list* lh, int screen_width, 
         int screen_height, int number) {
- 
+
     for (int i = 0; i < number; i++) {
-    
+
         entity *hater = spa_entity_create(rand() % screen_width + HATER_WIDTH / 2, 
                 rand() % screen_height + HATER_HEIGHT / 2, 0, 0, 0);
         spa_hater_init_entity(hater);

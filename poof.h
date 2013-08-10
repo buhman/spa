@@ -6,10 +6,10 @@ typedef struct poof poof;
 typedef struct poof_list poof_list;
 
 struct poof {
-        float x;
-        float y;
-        float iteration;
-        LIST_ENTRY(poof) poof_p;
+    float x;
+    float y;
+    float iteration;
+    LIST_ENTRY(poof) poof_p;
 };
 
 LIST_HEAD(poof_list, poof);
