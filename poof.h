@@ -10,10 +10,7 @@ struct poof {
     float x;
     float y;
     float iteration;
-<<<<<<< HEAD
-=======
     ALLEGRO_COLOR color;
->>>>>>> long-laser
     LIST_ENTRY(poof) poof_p;
 };
 

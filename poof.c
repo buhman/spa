@@ -15,10 +15,7 @@ poof* spa_poof_create(int x, int y, ALLEGRO_COLOR color) {
 
     p->x = x;
     p->y = y;
-<<<<<<< HEAD
-=======
     p->color = color;
->>>>>>> long-laser
 
     return p;
 }
@@ -30,11 +27,7 @@ void spa_poof_destroy(poof* p) {
 
 void spa_poof_add(poof_list* lh, int x, int y, ALLEGRO_COLOR color) {
 
-<<<<<<< HEAD
-    poof* p = spa_poof_create(x, y);
-=======
     poof* p = spa_poof_create(x, y, color);
->>>>>>> long-laser
     LIST_INSERT_HEAD(lh, p, poof_p);
 }
 
@@ -53,11 +46,7 @@ void spa_poof_draw(poof* p) {
         float theta = interval * i;
         float x = p->iteration * cos(theta) + p->x;
         float y = p->iteration * sin(theta) + p->y;
-<<<<<<< HEAD
-        al_draw_pixel(x, y, al_map_rgb(255, 0, 0));
-=======
         al_draw_pixel(x, y, p->color);
->>>>>>> long-laser
     }
 
     p->iteration++;
