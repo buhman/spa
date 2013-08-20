@@ -1,20 +1,17 @@
-# define M_PI_2     1.57079632679489661923  /* pi/2 */
-
 #include <math.h>
 #include <allegro5/allegro_primitives.h>
 
+#include "config.h"
 #include "entity.h"
 #include "laser.h"
 #include "xlines.h"
 
-const int RR = 1.4142135623730951;
+void spa_laser_draw(entity *player) {
 
-void spa_laser_draw(entity* player, int width, int height) {
+    int x1 = player->x + (player->width * cos(player->theta - M_PI_2));
+    int y1 = player->y + (player->height * sin(player->theta - M_PI_2));
 
-    int x1 = player->x + (player->width * cos(player->theta - M_PI_2) / RR);
-    int y1 = player->y + (player->height * sin(player->theta - M_PI_2) / RR);
-
-    int r = width + height;
+    int r = SPA_DISPLAY_WIDTH + SPA_DISPLAY_HEIGHT;
 
     float x2 = cos(player->theta - M_PI_2) * r + x1;
     float y2 = sin(player->theta - M_PI_2) * r + y1;
@@ -23,12 +20,12 @@ void spa_laser_draw(entity* player, int width, int height) {
             al_map_rgb(0, 255, 0), 2);
 }
 
-bool spa_laser_collide(entity *e, entity *player, int width, int height, long *x, long *y) {
+bool spa_laser_collide(entity *e, entity *player, long *x, long *y) {
 
-    int lx1 = player->x + (player->width * cos(player->theta - M_PI_2) / RR);
-    int ly1 = player->y + (player->height * sin(player->theta - M_PI_2) / RR);
+    int lx1 = player->x + (player->width * cos(player->theta - M_PI_2));
+    int ly1 = player->y + (player->height * sin(player->theta - M_PI_2));
 
-    int r = width + height;
+    int r = SPA_DISPLAY_WIDTH + SPA_DISPLAY_HEIGHT;
 
     float lx2 = cos(player->theta - M_PI_2) * r + ly1;
     float ly2 = sin(player->theta - M_PI_2) * r + lx1;

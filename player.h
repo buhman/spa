@@ -4,14 +4,15 @@
 
 #include "entity.h"
 
-typedef enum WEAPON WEAPON;
+typedef struct player player;
 
-enum WEAPON {
-    rifle,
-    laser
+struct player {
+  entity e;
+  int health;
+  int sheilds;
+  weapon weapon;
 };
 
 bool spa_player_init(ALLEGRO_DISPLAY*);
-void spa_player_init_entity(entity*);
-void spa_player_destroy();
-void spa_player_damage(entity*, int, ALLEGRO_TIMER*);
+void spa_player_shutdown();
+void spa_player_damage(player*, int);

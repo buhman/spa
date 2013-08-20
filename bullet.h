@@ -4,8 +4,18 @@
 
 #include "entity.h"
 
-bool spa_bullet_init(ALLEGRO_DISPLAY*);
-void spa_bullet_init_entity(entity*);
-void spa_bullet_destroy();
+typedef enum bullet_type bullet_type;
+
+enum bullet_type {
+  pew /* pew pew ! */
+};
+
+typedef struct bullet bullet;
+
+struct bullet {
+  entity e;
+  bullet_type type;
+};
+
+bullet* spa_bullet_create(float x, float y, float x_vel, float y_vel, float theta, float theta_vel);
 void spa_add_bullet(entity_list*, entity*);
-entity* spa_remove_bullet(entity*);

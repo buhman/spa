@@ -1,58 +1,40 @@
 #include <stdio.h>
-#define __USE_BSD
 #include <math.h>
 #include <sys/queue.h>
 #include <allegro5/allegro.h>
 
+#include "config.h"
 #include "entity.h"
 #include "bullet.h"
 
 ALLEGRO_BITMAP *bullet_bitmap = NULL;
 
-const int BULLET_WIDTH = 4;
-const int BULLET_HEIGHT = 6;
+bullet* spa_bullet_create(float x, float y, float x_vel, float y_vel, float theta, float theta_vel) {
 
-const int R = 1.4142135623730951;
+  bullet *b = NULL;
 
-bool spa_bullet_init(ALLEGRO_DISPLAY *display) {
+  {
+    b = malloc(sizeof(bullet));
+    if (!b) {
+      fprintf(stderr, "malloc(): failed\n");
+      return NULL;
+    }
+  } /* ... */
 
-    {
-        bullet_bitmap = al_create_bitmap(BULLET_WIDTH, BULLET_HEIGHT);
-        if (!bullet_bitmap) {
-            fprintf(stderr, "al_create_bitmap(): failed\n");
-            return false;
-        }
-    } /* ... */
+  spa_entity_init((entity*)b, x, y - 1, x_vel, y_vel, theta, theta_vel);
 
-    {
-        al_set_target_bitmap(bullet_bitmap);
-        al_clear_to_color(al_map_rgb(255, 255, 0));
-        al_set_target_bitmap(al_get_backbuffer(display));
-    } /* ... */
+  b->e.width = SPA_BULLET_RADIUS;
+  b->e.height = SPA_BULLET_RADIUS;
 
-    return true;
-}
-
-void spa_bullet_init_entity(entity* bullet) {
-
-    spa_entity_init(bullet, bullet_bitmap);
-
-    bullet->y_vel -= 1;
-}
-
-void spa_bullet_destroy() {
-    if (bullet_bitmap)
-        al_destroy_bitmap(bullet_bitmap);
+  return b;
 }
 
 void spa_add_bullet(entity_list *lh, entity *e) {
 
-    int x = e->x + ((BULLET_HEIGHT + e->width) * cos(e->theta - M_PI_2) / R);
-    int y = e->y + ((BULLET_HEIGHT + e->height) * sin(e->theta - M_PI_2) / R);
+  int x = e->x + ((SPA_BULLET_RADIUS + e->width) * cos(e->theta - M_PI_2));
+  int y = e->y + ((SPA_BULLET_RADIUS + e->height) * sin(e->theta - M_PI_2));
 
-    entity *bullet = spa_entity_create(x, y, e->x_vel, e->y_vel, e->theta);
-    spa_bullet_init_entity(bullet);
-    bullet->theta = e->theta;
+  bullet *bullet = spa_bullet_create(x, y, e->x_vel, e->y_vel, e->theta, 0);
 
-    LIST_INSERT_HEAD(lh, bullet, entity_p);
+  LIST_INSERT_HEAD(lh, (entity*)bullet, list);
 }
