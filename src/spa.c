@@ -2,11 +2,14 @@
 #define __USE_BSD
 #include <math.h>
 #include <sys/queue.h>
+#include <string.h>
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_primitives.h>
+
+#include <fontconfig/fontconfig.h>
 
 #include "spa.h"
 #include "entity.h"
@@ -46,6 +49,42 @@ void print_version(const char* text, int v) {
 
     fprintf(stdout, "%s version: %d.%d.%dr%d\n", text,
             v >> 24, (v >> 16) & 255, (v >> 8) & 255, v & 255);
+}
+
+static int
+get_font(const char *name, char **ofile) {
+    FcPattern *pat, *match;
+    FcResult res;
+    int ret = 0;
+    FcChar8 *file;
+
+    pat = FcNameParse((FcChar8*)name);
+    if (!pat) {
+        fprintf(stderr, "get_font: invalid name\n");
+        return -1;
+    }
+
+    FcConfigSubstitute(0, pat, FcMatchPattern);
+    FcDefaultSubstitute(pat);
+
+    match = FcFontMatch(0, pat, &res);
+    if (!match) {
+        fprintf(stderr, "get_font: no fonts installed\n");
+        return -1;
+    }
+
+    res = FcPatternGetString(match, FC_FILE, 0, &file);
+    if (res != FcResultMatch) {
+        fprintf(stderr, "get_font: invalid font?\n");
+        return -1;
+    }
+    *ofile = strdup((char*)file);
+
+    FcPatternDestroy(pat);
+    FcPatternDestroy(match);
+    FcFini();
+
+    return ret;
 }
 
 bool spa_init(void) {
@@ -121,9 +160,14 @@ bool spa_init(void) {
     } /* ... */
 
     {
+        char *path;
+        int ret;
+        ret = get_font("monospace", &path);
+        if (ret < 0)
+            return false;
         al_init_font_addon();
         al_init_ttf_addon();
-        font = al_load_font("DejaVuSansMono.ttf", 12, 0);
+        font = al_load_font(path, 12, 0);
         if (!font) {
             fprintf(stderr, "al_load_font(): failed\n");
             return false;
