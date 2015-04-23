@@ -1,7 +1,7 @@
 TARGET = spa
 LIBS = -lallegro -lallegro_font -lallegro_ttf -lallegro_primitives -lm
 CC = gcc
-CFLAGS = -g -Wall -std=c99 -O3
+CFLAGS = -g -Wall -std=c99 -O3 -D_GNU_SOURCE
 
 .PHONY: clean all default
 
