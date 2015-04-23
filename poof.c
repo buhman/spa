@@ -33,8 +33,9 @@ void spa_poof_add(poof_list* lh, int x, int y, ALLEGRO_COLOR color) {
 
 poof* spa_poof_remove(poof* p) {
 
+    poof* p2;
     LIST_REMOVE(p, poof_p);
-    poof* p2 = p->poof_p.le_next;
+    p2 = p->poof_p.le_next;
     spa_poof_destroy(p);
     return p2;
 }

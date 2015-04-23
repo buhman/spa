@@ -1,3 +1,5 @@
+#include "xlines.h"
+
 #define	DONT_INTERSECT    0
 #define	DO_INTERSECT      1
 #define COLLINEAR         2
@@ -67,7 +69,7 @@ int lines_intersect(long x1, long y1, long x2, long y2,
             SAME_SIGNS( r1, r2 ))
         return ( DONT_INTERSECT );
 
-    /* Line segments intersect: compute intersection point. 
+    /* Line segments intersect: compute intersection point.
     */
 
     denom = a1 * b2 - a2 * b1;

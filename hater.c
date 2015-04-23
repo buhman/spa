@@ -33,20 +33,20 @@ bool spa_hater_init(ALLEGRO_DISPLAY *display) {
         al_clear_to_color(al_map_rgba(0, 0, 0, 0));
 
         al_draw_circle(
-                width / 2, 
-                height / 2 + height / 6, 
+                width / 2,
+                height / 2 + height / 6,
                 width / 2.8,
                 al_map_rgb(0, 255, 255), 1);
 
         al_draw_circle(
-                width / 8, 
-                height / 8, 
+                width / 8,
+                height / 8,
                 width / 6,
                 al_map_rgb(0, 255, 255), 1);
 
         al_draw_circle(
-                width - width / 8, 
-                height / 8, 
+                width - width / 8,
+                height / 8,
                 width / 6,
                 al_map_rgb(0, 255, 255), 1);
 
@@ -64,7 +64,7 @@ void spa_hater_init_entity(entity* hater) {
     hater->mass = 3;
 }
 
-void spa_hater_destroy() {
+void spa_hater_destroy(void) {
     if (hater_bitmap)
         al_destroy_bitmap(hater_bitmap);
 }
@@ -90,12 +90,12 @@ void spa_hater_update(entity* hater, entity* player, entity_list *lh, int level)
     } /* ... */
 }
 
-void spa_create_haters(entity_list* lh, int screen_width, 
+void spa_create_haters(entity_list* lh, int screen_width,
         int screen_height, int number) {
 
     for (int i = 0; i < number; i++) {
 
-        entity *hater = spa_entity_create(rand() % screen_width + HATER_WIDTH / 2, 
+        entity *hater = spa_entity_create(rand() % screen_width + HATER_WIDTH / 2,
                 rand() % screen_height + HATER_HEIGHT / 2, 0, 0, 0);
         spa_hater_init_entity(hater);
 

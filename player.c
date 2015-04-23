@@ -12,13 +12,13 @@ const int PLAYER_HEIGHT = 32;
 
 bool spa_player_init(ALLEGRO_DISPLAY *display) {
 
-    { 
-        player_bitmap = al_create_bitmap(PLAYER_WIDTH, PLAYER_HEIGHT); 
-        if (!player_bitmap) { 
-            fprintf(stderr, "al_create_bitmap(): failed\n"); 
-            return false; 
-        } 
-    } /* ... */ 
+    {
+        player_bitmap = al_create_bitmap(PLAYER_WIDTH, PLAYER_HEIGHT);
+        if (!player_bitmap) {
+            fprintf(stderr, "al_create_bitmap(): failed\n");
+            return false;
+        }
+    } /* ... */
 
     {
         int width = PLAYER_WIDTH - 1;
@@ -49,7 +49,7 @@ void spa_player_init_entity(entity *e) {
     e->health = 100;
 }
 
-void spa_player_destroy() {
+void spa_player_destroy(void) {
     if (player_bitmap)
         al_destroy_bitmap(player_bitmap);
 }

@@ -40,7 +40,7 @@ void spa_bullet_init_entity(entity* bullet) {
     bullet->y_vel -= 1;
 }
 
-void spa_bullet_destroy() {
+void spa_bullet_destroy(void) {
     if (bullet_bitmap)
         al_destroy_bitmap(bullet_bitmap);
 }

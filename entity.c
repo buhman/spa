@@ -68,27 +68,27 @@ void spa_entity_destroy(entity *e) {
 
 void spa_entity_attenuate(entity *e) {
 
-    if (e->x_accel == 0 && e->x_vel != 0) {
+    if (!(fabs(e->x_accel) > 0.0) && fabs(e->x_vel) > 0.0) {
         e->x_vel *= 0.96;
     }
-    if (e->y_accel == 0 && e->y_vel != 0) {
+    if (!(fabs(e->y_accel) > 0.0) && fabs(e->y_vel) > 0.0) {
         e->y_vel *= 0.96;
     }
-    if (e->theta_accel == 0 && e->theta_vel != 0) {
+    if (!(fabs(e->theta_accel) > 0.0) && fabs(e->theta_vel) > 0.0) {
         e->theta_vel *= 0.96;
     }
 }
 
-void spa_entity_update(entity *e, int screen_width) {   
+void spa_entity_update(entity *e, int screen_width) {
 
-    if (e->x_vel + e->x_accel < TERMINAL_VELOCITY && 
+    if (e->x_vel + e->x_accel < TERMINAL_VELOCITY &&
             e->x_vel + e->x_accel > -TERMINAL_VELOCITY)
         e->x_vel += e->x_accel;
-    if (e->y_vel + e->y_accel < TERMINAL_VELOCITY && 
+    if (e->y_vel + e->y_accel < TERMINAL_VELOCITY &&
             e->y_vel + e->y_accel > -TERMINAL_VELOCITY)
         e->y_vel += e->y_accel;
 
-    if (e->theta_vel + e->theta_accel < TERMINAL_THETA_VEL && 
+    if (e->theta_vel + e->theta_accel < TERMINAL_THETA_VEL &&
             e->theta_vel + e->theta_accel > -TERMINAL_THETA_VEL)
         e->theta_vel += e->theta_accel;
 
@@ -126,32 +126,36 @@ bool spa_entity_collide(entity *e1, entity *e2) {
 
 void spa_draw_entity(entity *e) {
 
+    int e_x2, e_x1, e_y2, e_y1;
+
     al_draw_rotated_bitmap(e->bitmap,
             e->width / 2,
             e->height / 2,
             e->x, e->y,
             e->theta, 0);
 
-    int e_x2 = fmax(e->x, e->x + e->x_vel) + e->width / 2;
-    int e_x1 = fmin(e->x, e->x + e->x_vel) - e->width / 2;
-    int e_y2 = fmax(e->y, e->y + e->y_vel) + e->height / 2;
-    int e_y1 = fmin(e->y, e->y + e->y_vel) - e->width / 2;
+    e_x2 = fmax(e->x, e->x + e->x_vel) + e->width / 2;
+    e_x1 = fmin(e->x, e->x + e->x_vel) - e->width / 2;
+    e_y2 = fmax(e->y, e->y + e->y_vel) + e->height / 2;
+    e_y1 = fmin(e->y, e->y + e->y_vel) - e->width / 2;
 
     al_draw_rectangle(e_x1, e_y1, e_x2, e_y2,
             al_map_rgb(50, 50, 50), 1);
 }
 
 entity* spa_remove_entity(entity* e) {
+    entity *e2;
     LIST_REMOVE(e, entity_p);
-    entity *e2 = e->entity_p.le_next;
+    e2 = e->entity_p.le_next;
     spa_entity_destroy(e);
     return e2;
 }
 
 void spa_clear_entity_list(entity_list* lh) {
+    entity *e;
 
     if (lh) {
-        entity *e = lh->lh_first;
+        e = lh->lh_first;
         while (e != NULL) {
             e = spa_remove_entity(e);
         }

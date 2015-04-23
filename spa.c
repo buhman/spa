@@ -42,13 +42,13 @@ double event_time;
 double render_time;
 double osd_time;
 
-void print_version(char* text, int v) {
+void print_version(const char* text, int v) {
 
     fprintf(stdout, "%s version: %d.%d.%dr%d\n", text,
             v >> 24, (v >> 16) & 255, (v >> 8) & 255, v & 255);
 }
 
-bool spa_init() {
+bool spa_init(void) {
     {
         if (!al_init()) {
             fprintf(stderr, "al_init(): failed\n");
@@ -153,7 +153,7 @@ bool spa_init() {
     } /* ... */
 
     {
-        al_register_event_source(event_queue, 
+        al_register_event_source(event_queue,
                 al_get_display_event_source(display));
 
         al_register_event_source(event_queue,
@@ -173,7 +173,7 @@ bool spa_init() {
     return true;
 }
 
-void spa_render() {
+void spa_render(void) {
 
     double t = al_get_time();
 
@@ -182,8 +182,8 @@ void spa_render() {
     spa_draw_entity(player);
 
     {
-        entity *bullet; 
-        for (bullet = bullet_list_head->lh_first; bullet != NULL; 
+        entity *bullet;
+        for (bullet = bullet_list_head->lh_first; bullet != NULL;
                 bullet = bullet->entity_p.le_next) {
 
             spa_draw_entity(bullet);
@@ -198,11 +198,11 @@ void spa_render() {
         }
     } /* ... */
     {
-        poof *poof;
-        for (poof = poof_list_head->lh_first; poof != NULL;
-                poof = poof->poof_p.le_next) {
+        poof *p;
+        for (p = poof_list_head->lh_first; p != NULL;
+                p = p->poof_p.le_next) {
 
-            spa_poof_draw(poof);
+            spa_poof_draw(p);
         }
     } /* ... */
 
@@ -214,9 +214,9 @@ void spa_render() {
     render_time = al_get_time() - t;
 }
 
-void spa_osd() {
+void spa_osd(void) {
 
-    double t = al_get_time();       
+    double t = al_get_time();
 
     al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 2, ALLEGRO_ALIGN_LEFT,
             "health: %d", player->health);
@@ -243,16 +243,16 @@ void spa_osd() {
             "osd: %.2fs", osd_time);
 
     al_draw_textf(font, al_map_rgb(255, 255, 255), 2, SCREEN_H - 14, ALLEGRO_ALIGN_LEFT,
-            "p->t: %.2f ; p->t_v: %.2f ; p->t_a: %.2f", 
+            "p->t: %.2f ; p->t_v: %.2f ; p->t_a: %.2f",
             player->theta, player->theta_vel, player->theta_accel);
     al_draw_textf(font, al_map_rgb(255, 255, 255), 2, SCREEN_H - 26, ALLEGRO_ALIGN_LEFT,
-            "p->y: %.2f ; p->y_v: %.2f ; p->y_a: %.2f", 
+            "p->y: %.2f ; p->y_v: %.2f ; p->y_a: %.2f",
             player->y, player->y_vel, player->y_accel);
     al_draw_textf(font, al_map_rgb(255, 255, 255), 2, SCREEN_H - 38, ALLEGRO_ALIGN_LEFT,
-            "p->x: %.2f ; p->x_v: %.2f ; p->x_a: %.2f", 
+            "p->x: %.2f ; p->x_v: %.2f ; p->x_a: %.2f",
             player->x, player->x_vel, player->x_accel);
 
-    char* weapon = "null";
+    const char* weapon = "null";
 
     switch (player->type) {
         case rifle:
@@ -278,7 +278,7 @@ void spa_osd() {
     osd_time = al_get_time() - t;
 }
 
-void spa_game_reset() {
+void spa_game_reset(void) {
 
     score = 10;
     level = 1;
@@ -394,20 +394,20 @@ bool spa_loop(bool *redraw) {
     return false;
 }
 
-void spa_logic_update() {
+void spa_logic_update(void) {
 
     double t = al_get_time();
 
     entity *bullet;
     entity *hater;
-    poof *poof;
+    poof *p;
 
     bullet_count = 0;
     bullet = bullet_list_head->lh_first;
     while (bullet != NULL) {
 
         {
-            if (bullet->y + bullet->height < 0 || 
+            if (bullet->y + bullet->height < 0 ||
                     bullet->y + bullet->height > SCREEN_H) {
                 bullet = spa_remove_entity(bullet);
                 goto bullet_loop_end;
@@ -433,11 +433,11 @@ void spa_logic_update() {
                     score += 10;
                     hater->health -= 5;
                     spa_poof_add(poof_list_head, bullet->x, bullet->y, al_map_rgb(255, 0, 0));
-                    
+
                     bullet = spa_remove_entity(bullet);
 
                     if (hater->health <= 0) {
-                        // this isn't used anyway, since we go 
+                        // this isn't used anyway, since we go
                         // immediately to the next bullet
                         hater = spa_remove_entity(hater);
                     }
@@ -494,13 +494,13 @@ bullet_loop_end:
     }
 
     poof_count = 0;
-    poof = poof_list_head->lh_first;
-    while (poof != NULL) {
-        if (poof->iteration > 25) {
-            poof = spa_poof_remove(poof);
+    p = poof_list_head->lh_first;
+    while (p != NULL) {
+        if (p->iteration > 25) {
+            p = spa_poof_remove(p);
             continue;
         }
-        poof = poof->poof_p.le_next;
+        p = p->poof_p.le_next;
         poof_count++;
     }
 
