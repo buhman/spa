@@ -11,6 +11,7 @@
 
 #include <fontconfig/fontconfig.h>
 
+#include "config.h"
 #include "spa.h"
 #include "entity.h"
 #include "player.h"
@@ -167,7 +168,7 @@ bool spa_init(void) {
             return false;
         al_init_font_addon();
         al_init_ttf_addon();
-        font = al_load_font(path, 12, 0);
+        font = al_load_font(path, 12 * UI_SCALE, 0);
         if (!font) {
             fprintf(stderr, "al_load_font(): failed\n");
             return false;
@@ -262,37 +263,37 @@ void spa_osd(void) {
 
     double t = al_get_time();
 
-    al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 2, ALLEGRO_ALIGN_LEFT,
+    al_draw_textf(font, al_map_rgb(255, 255, 255), 2 * UI_SCALE, 2 * UI_SCALE, ALLEGRO_ALIGN_LEFT,
             "health: %d", player->health);
-    al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 14, ALLEGRO_ALIGN_LEFT,
+    al_draw_textf(font, al_map_rgb(255, 255, 255), 2 * UI_SCALE, 14 * UI_SCALE, ALLEGRO_ALIGN_LEFT,
             "score: %d", score);
-    al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 26, ALLEGRO_ALIGN_LEFT,
+    al_draw_textf(font, al_map_rgb(255, 255, 255), 2 * UI_SCALE, 26 * UI_SCALE, ALLEGRO_ALIGN_LEFT,
             "level: %d", level);
 
-    al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 38, ALLEGRO_ALIGN_LEFT,
+    al_draw_textf(font, al_map_rgb(255, 255, 255), 2 * UI_SCALE, 38 * UI_SCALE, ALLEGRO_ALIGN_LEFT,
             "bullets: %d", bullet_count);
-    al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 50, ALLEGRO_ALIGN_LEFT,
+    al_draw_textf(font, al_map_rgb(255, 255, 255), 2 * UI_SCALE, 50 * UI_SCALE, ALLEGRO_ALIGN_LEFT,
             "haters: %d", hater_count);
-    al_draw_textf(font, al_map_rgb(255, 255, 255), 2, 62, ALLEGRO_ALIGN_LEFT,
+    al_draw_textf(font, al_map_rgb(255, 255, 255), 2 * UI_SCALE, 62 * UI_SCALE, ALLEGRO_ALIGN_LEFT,
             "poofs: %d", poof_count);
 
 
-    al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W - 2, 2, ALLEGRO_ALIGN_RIGHT,
+    al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W - 2 * UI_SCALE, 2 * UI_SCALE, ALLEGRO_ALIGN_RIGHT,
             "event: %.2fs", event_time);
-    al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W - 2, 14, ALLEGRO_ALIGN_RIGHT,
+    al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W - 2 * UI_SCALE, 14 * UI_SCALE, ALLEGRO_ALIGN_RIGHT,
             "logic: %.2fs", logic_time);
-    al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W - 2, 26, ALLEGRO_ALIGN_RIGHT,
+    al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W - 2 * UI_SCALE, 26 * UI_SCALE, ALLEGRO_ALIGN_RIGHT,
             "render: %.2fs", render_time);
-    al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W - 2, 38, ALLEGRO_ALIGN_RIGHT,
+    al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W - 2 * UI_SCALE, 38 * UI_SCALE, ALLEGRO_ALIGN_RIGHT,
             "osd: %.2fs", osd_time);
 
-    al_draw_textf(font, al_map_rgb(255, 255, 255), 2, SCREEN_H - 14, ALLEGRO_ALIGN_LEFT,
+    al_draw_textf(font, al_map_rgb(255, 255, 255), 2 * UI_SCALE, SCREEN_H - 14 * UI_SCALE, ALLEGRO_ALIGN_LEFT,
             "p->t: %.2f ; p->t_v: %.2f ; p->t_a: %.2f",
             player->theta, player->theta_vel, player->theta_accel);
-    al_draw_textf(font, al_map_rgb(255, 255, 255), 2, SCREEN_H - 26, ALLEGRO_ALIGN_LEFT,
+    al_draw_textf(font, al_map_rgb(255, 255, 255), 2 * UI_SCALE, SCREEN_H - 26 * UI_SCALE, ALLEGRO_ALIGN_LEFT,
             "p->y: %.2f ; p->y_v: %.2f ; p->y_a: %.2f",
             player->y, player->y_vel, player->y_accel);
-    al_draw_textf(font, al_map_rgb(255, 255, 255), 2, SCREEN_H - 38, ALLEGRO_ALIGN_LEFT,
+    al_draw_textf(font, al_map_rgb(255, 255, 255), 2 * UI_SCALE, SCREEN_H - 38 * UI_SCALE, ALLEGRO_ALIGN_LEFT,
             "p->x: %.2f ; p->x_v: %.2f ; p->x_a: %.2f",
             player->x, player->x_vel, player->x_accel);
 
@@ -307,13 +308,13 @@ void spa_osd(void) {
             break;
     }
 
-    al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W / 2, 2, ALLEGRO_ALIGN_CENTER,
+    al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_W / 2, 2 * UI_SCALE, ALLEGRO_ALIGN_CENTER,
             "weapon: %s", weapon);
 
     if (player->health <= 0) {
         al_draw_text(font, al_map_rgb(255, 255, 255), SCREEN_W / 2, SCREEN_H / 2,
                 ALLEGRO_ALIGN_CENTER, "you died");
-        al_draw_text(font, al_map_rgb(255, 255, 255), SCREEN_W / 2, SCREEN_H / 2 + 12,
+        al_draw_text(font, al_map_rgb(255, 255, 255), SCREEN_W / 2, SCREEN_H / 2 + 12 * UI_SCALE,
                 ALLEGRO_ALIGN_CENTER, "(press [BACKSPACE] to restart)");
     }
 
@@ -334,7 +335,7 @@ void spa_game_reset(void) {
 
     {
         if (player)
-            free(player);
+           free(player);
 
         player = spa_entity_create(SCREEN_W / 2, SCREEN_H - (SCREEN_H / 4), 0, 0, 0);
         spa_player_init_entity(player);
@@ -365,16 +366,16 @@ bool spa_loop(bool *redraw) {
     else if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
         switch (ev.keyboard.keycode) {
             case ALLEGRO_KEY_W:
-                player->y_accel = -0.1;
+                player->y_accel = -0.1 * SCALE;
                 break;
             case ALLEGRO_KEY_S:
-                player->y_accel = 0.1;
+                player->y_accel = 0.1 * SCALE;
                 break;
             case ALLEGRO_KEY_Q:
-                player->x_accel = -0.1;
+                player->x_accel = -0.1 * SCALE;
                 break;
             case ALLEGRO_KEY_E:
-                player->x_accel = 0.1;
+                player->x_accel = 0.1 * SCALE;
                 break;
             case ALLEGRO_KEY_A:
                 player->theta_accel = -0.0078;
@@ -540,7 +541,7 @@ bullet_loop_end:
     poof_count = 0;
     p = poof_list_head->lh_first;
     while (p != NULL) {
-        if (p->iteration > 25) {
+        if (p->iteration > 25 * SCALE) {
             p = spa_poof_remove(p);
             continue;
         }

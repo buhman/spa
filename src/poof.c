@@ -5,9 +5,10 @@
 
 #include <allegro5/allegro.h>
 
+#include "config.h"
 #include "poof.h"
 
-const float interval = 0.6283185307179586;
+const float interval = 0.6283185307179586 / SCALE;
 
 poof* spa_poof_create(int x, int y, ALLEGRO_COLOR color) {
 
@@ -42,7 +43,7 @@ poof* spa_poof_remove(poof* p) {
 
 void spa_poof_draw(poof* p) {
 
-    for (int i=0; i < 10; i++) {
+    for (int i=0; i < 10 * SCALE; i++) {
 
         float theta = interval * i;
         float x = p->iteration * cos(theta) + p->x;

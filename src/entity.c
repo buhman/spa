@@ -4,9 +4,10 @@
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
 
+#include "config.h"
 #include "entity.h"
 
-const int TERMINAL_VELOCITY = 2;
+const int TERMINAL_VELOCITY = 2 * SCALE;
 const float TERMINAL_THETA_VEL = M_PI_4 / 10;
 
 entity* spa_entity_create(float x, float y, float x_vel, float y_vel, float theta) {

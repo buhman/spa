@@ -4,14 +4,15 @@
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
 
+#include "config.h"
 #include "entity.h"
 #include "hater.h"
 #include "bullet.h"
 
 ALLEGRO_BITMAP *hater_bitmap = NULL;
 
-const int HATER_WIDTH = 20;
-const int HATER_HEIGHT = 20;
+const int HATER_WIDTH = 20 * SCALE;
+const int HATER_HEIGHT = 20 * SCALE;
 const float HATER_THETA = M_PI_4 / 500000;
 
 bool spa_hater_init(ALLEGRO_DISPLAY *display) {

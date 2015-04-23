@@ -3,6 +3,7 @@
 #include <math.h>
 #include <allegro5/allegro_primitives.h>
 
+#include "config.h"
 #include "entity.h"
 #include "laser.h"
 #include "xlines.h"
@@ -53,5 +54,3 @@ bool spa_laser_collide(entity *e, entity *player, int width, int height, long *x
         return true;
     return false;
 }
-
-

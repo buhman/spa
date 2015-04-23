@@ -2,13 +2,14 @@
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
 
+#include "config.h"
 #include "entity.h"
 #include "player.h"
 
 ALLEGRO_BITMAP *player_bitmap = NULL;
 
-const int PLAYER_WIDTH = 32;
-const int PLAYER_HEIGHT = 32;
+const int PLAYER_WIDTH = 32 * SCALE;
+const int PLAYER_HEIGHT = 32 * SCALE;
 
 bool spa_player_init(ALLEGRO_DISPLAY *display) {
 

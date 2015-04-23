@@ -4,13 +4,14 @@
 #include <sys/queue.h>
 #include <allegro5/allegro.h>
 
+#include "config.h"
 #include "entity.h"
 #include "bullet.h"
 
 ALLEGRO_BITMAP *bullet_bitmap = NULL;
 
-const int BULLET_WIDTH = 4;
-const int BULLET_HEIGHT = 6;
+const int BULLET_WIDTH = 4 * SCALE;
+const int BULLET_HEIGHT = 6 * SCALE;
 
 const int R = 1.4142135623730951;
 
@@ -37,7 +38,7 @@ void spa_bullet_init_entity(entity* bullet) {
 
     spa_entity_init(bullet, bullet_bitmap);
 
-    bullet->y_vel -= 1;
+    bullet->y_vel -= 1 * SCALE;
 }
 
 void spa_bullet_destroy(void) {
