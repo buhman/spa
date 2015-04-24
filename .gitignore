@@ -12,8 +12,45 @@
 *.la
 *.a
 
-# vim cruft
+# cruft
 *.swp
+*~
+\#*\#
+.\#*
 
 # binary
 spa
+a.out
+
+# automake
+
+Makefile.in
+Makefile
+
+# autocruft
+
+autom4te.cache
+aclocal.m4
+compile
+configure
+depcomp
+install-sh
+missing
+config.guess
+./config.h
+config.h.in
+config.log
+config.status
+config.sub
+config.cache
+db
+libtool
+ltmain.sh
+m4
+stamp-h1
+
+# dots
+.*
+!/.gitignore
+*.bdb
+version.h

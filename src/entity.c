@@ -26,7 +26,7 @@ entity* spa_entity_create(float x, float y, float x_vel, float y_vel, float thet
 }
 
 void spa_entity_init(entity *e, float x, float y, float x_vel, float y_vel, float theta, float theta_vel) {
-  
+
   {
     e->x = x;
     e->y = y;
@@ -44,7 +44,7 @@ void spa_entity_init(entity *e, float x, float y, float x_vel, float y_vel, floa
     e->height = 1;
 
     e->mass= 1;
-  } /* ... */  
+  } /* ... */
 }
 
 void spa_entity_destroy(void *e) {
@@ -55,27 +55,27 @@ void spa_entity_destroy(void *e) {
 
 void spa_entity_attenuate(entity *e) {
 
-  if (e->x_accel == 0 && e->x_vel != 0) {
-    e->x_vel *= 0.97;
+  if (!(fabs(e->x_accel) > 0.0) && fabs(e->x_vel) > 0.0) {
+    e->x_vel *= 0.96;
   }
-  if (e->y_accel == 0 && e->y_vel != 0) {
-    e->y_vel *= 0.97;
+  if (!(fabs(e->y_accel) > 0.0) && fabs(e->y_vel) > 0.0) {
+    e->y_vel *= 0.96;
   }
-  if (e->theta_accel == 0 && e->theta_vel != 0) {
-    e->theta_vel *= 0.98;
+  if (!(fabs(e->theta_accel) > 0.0) && fabs(e->theta_vel) > 0.0) {
+    e->theta_vel *= 0.96;
   }
 }
 
-void spa_entity_update(entity *e) {	
+void spa_entity_update(entity *e) {
 
-  if (e->x_vel + e->x_accel < SPA_ENTITY_MAX_DISP_VEL && 
+  if (e->x_vel + e->x_accel < SPA_ENTITY_MAX_DISP_VEL &&
       e->x_vel + e->x_accel > -SPA_ENTITY_MAX_DISP_VEL)
     e->x_vel += e->x_accel;
-  if (e->y_vel + e->y_accel < SPA_ENTITY_MAX_DISP_VEL && 
+  if (e->y_vel + e->y_accel < SPA_ENTITY_MAX_DISP_VEL &&
       e->y_vel + e->y_accel > -SPA_ENTITY_MAX_DISP_VEL)
     e->y_vel += e->y_accel;
 
-  if (e->theta_vel + e->theta_accel < SPA_ENTITY_MAX_THETA_VEL && 
+  if (e->theta_vel + e->theta_accel < SPA_ENTITY_MAX_THETA_VEL &&
       e->theta_vel + e->theta_accel > -SPA_ENTITY_MAX_THETA_VEL)
     e->theta_vel += e->theta_accel;
 

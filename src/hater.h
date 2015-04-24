@@ -13,7 +13,5 @@ struct hater {
 bool spa_hater_init(ALLEGRO_DISPLAY*);
 void spa_hater_shutdown();
 
-hater* spa_hater_create();
-
 void spa_hater_add(entity_list*, int);
 void spa_hater_update(hater*, player*, entity_list*, int);

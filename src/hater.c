@@ -30,20 +30,20 @@ bool spa_hater_init(ALLEGRO_DISPLAY *display) {
     al_clear_to_color(al_map_rgba(0, 0, 0, 0));
 
     al_draw_circle(
-		   width / 2, 
-		   height / 2 + height / 6, 
+		   width / 2,
+		   height / 2 + height / 6,
 		   width / 2.8,
 		   SPA_HATER_COLOR, 1);
 
     al_draw_circle(
-		   width / 8, 
-		   height / 8, 
+		   width / 8,
+		   height / 8,
 		   width / 6,
 		   SPA_HATER_COLOR, 1);
 
     al_draw_circle(
-		   width - width / 8, 
-		   height / 8, 
+		   width - width / 8,
+		   height / 8,
 		   width / 6,
 		   SPA_HATER_COLOR, 1);
 
@@ -56,13 +56,6 @@ bool spa_hater_init(ALLEGRO_DISPLAY *display) {
 void spa_hater_shutdown() {
   if (hater_bitmap)
     al_destroy_bitmap(hater_bitmap);
-}
-
-hater* spa_hater_create() {
-
-  hater* h;
-
-  return h;
 }
 
 void spa_hater_update(hater* hater, player* player, entity_list *sbl, int level) {
@@ -90,7 +83,7 @@ void spa_hater_add(entity_list *shl, int quantity) {
 
   for (int i = 0; i < quantity; i++) {
 
-    hater* hater;
-    LIST_INSERT_HEAD(shl, (entity*)hater, list);
+    hater* h;
+    LIST_INSERT_HEAD(shl, (entity*)h, list);
   }
 }

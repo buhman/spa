@@ -24,12 +24,13 @@ struct entity {
 
 typedef struct entity_list entity_list;
 
-LIST_HEAD(entity_list, entity) head;
+LIST_HEAD(entity_list, entity);
 
-			       /* this weapon declaration might belong
-				  in player.h instead depending on how
-			       useful it ends up being for other types */
-			       
+/*
+  this weapon declaration might belong in player.h instead depending
+  on how useful it ends up being for other types
+*/
+
 typedef enum weapon weapon;
 
 enum weapon {
