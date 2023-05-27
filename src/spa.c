@@ -97,6 +97,11 @@ bool spa_init(void) {
         else {
             print_version("allegro", al_get_allegro_version());
         }
+
+	if (!al_init_primitives_addon()) {
+            fprintf(stderr, "al_init_primitives_addon(): failed\n");
+            return false;
+	}
     } /* ... */
 
     init_time = al_get_time();
@@ -561,7 +566,7 @@ bullet_loop_end:
     logic_time = al_get_time() - t;
 }
 
-int main(int argc, char **argv) {
+int main() {
 
     bool redraw = true;
 

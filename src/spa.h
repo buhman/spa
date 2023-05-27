@@ -1,7 +1,7 @@
 #pragma once
 
-const int SCREEN_W = 640 * SCALE;
-const int SCREEN_H = 640 * ASPECT * SCALE;
+const int SCREEN_W = 540 * SCALE;
+const int SCREEN_H = (540 * SCALE) / ASPECT;
 const float FPS = 60;
 
 bool spa_init(void);

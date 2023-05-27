@@ -15,7 +15,9 @@ AC_SUBST([ARK_VERSION], $VERSION)
 
 AC_CANONICAL_HOST
 AC_DEFINE_UNQUOTED([CANONICAL_HOST], "$host", [Canonical host string.])
-
+AC_DEFINE([SCALE], [2], [Game object scale.])
+AC_DEFINE([UI_SCALE], [2], [User interface scale.])
+AC_DEFINE([ASPECT], [1], [Aspect ratio.])
 AM_SILENT_RULES([yes])
 
 ## checks ###

@@ -4,12 +4,10 @@
 
 #include "entity.h"
 
-typedef enum WEAPON WEAPON;
-
-enum WEAPON {
+typedef enum WEAPON {
     rifle,
     laser
-};
+} WEAPON;
 
 bool spa_player_init(ALLEGRO_DISPLAY*);
 void spa_player_init_entity(entity*);
